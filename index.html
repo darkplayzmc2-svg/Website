@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FF Panel - AimForge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Reset + fonts */
+    * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif;}
+    body,html {height:100%; overflow-x:hidden; background:#000; color:#fff;}
+
+    /* Background slideshow */
+    .bg-slideshow {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      z-index:-1; overflow:hidden;
+    }
+    .bg-slideshow img {
+      position:absolute; width:100%; height:100%; object-fit:cover;
+      opacity:0; animation:slideShow 24s infinite;
+    }
+    .bg-slideshow img:nth-child(1){animation-delay:0s;}
+    .bg-slideshow img:nth-child(2){animation-delay:8s;}
+    .bg-slideshow img:nth-child(3){animation-delay:16s;}
+    @keyframes slideShow {
+      0%,100% {opacity:0;}
+      8%,33% {opacity:1;}
+    }
+
+    /* Glass panels */
+    section {
+      padding:60px 20px; text-align:center;
+    }
+    .glass {
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:16px;
+      padding:30px;
+      max-width:900px; margin:0 auto;
+      box-shadow:0 0 20px rgba(0,255,255,0.2);
+    }
+
+    h1,h2,h3 {color:#0ff; text-shadow:0 0 10px #0ff;}
+    p {margin:10px 0; line-height:1.6;}
+
+    /* Buttons */
+    .btn {
+      display:inline-block;
+      margin:10px; padding:12px 25px;
+      background:linear-gradient(90deg,#0ff,#f0f);
+      color:#000; font-weight:bold;
+      border:none; border-radius:30px;
+      cursor:pointer; transition:.3s;
+      text-decoration:none;
+    }
+    .btn:hover {transform:scale(1.05); box-shadow:0 0 20px #0ff;}
+
+    /* Login form */
+    .login-box input {
+      width:80%; padding:10px; margin:10px 0;
+      border:none; border-radius:8px;
+      text-align:center;
+    }
+
+    /* Music control */
+    #musicBtn {
+      position:fixed; bottom:20px; right:20px;
+      background:rgba(0,0,0,0.6);
+      border:1px solid #0ff; border-radius:50%;
+      width:50px; height:50px;
+      color:#0ff; font-size:20px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+      z-index:1000;
+    }
+
+    /* Preloader */
+    #preloader {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:#000; display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      z-index:2000; transition:opacity 1s ease;
+    }
+    #preloader i {
+      font-size:60px; color:#f0f; text-shadow:0 0 20px #f0f, 0 0 40px #0ff;
+      animation:spin 2s linear infinite;
+    }
+    #preloader p {
+      margin-top:20px; color:#0ff; font-size:18px;
+      text-shadow:0 0 10px #0ff;
+    }
+    @keyframes spin {
+      from{transform:rotate(0deg);} to{transform:rotate(360deg);}
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <i class="fas fa-fire"></i>
+    <p>Loading Panel…</p>
+  </div>
+
+  <!-- Background Slideshow -->
+  <div class="bg-slideshow">
+    <img src="https://i.ibb.co/2nRCfny/ff1.jpg" alt="">
+    <img src="https://i.ibb.co/YR3XrPq/ff2.jpg" alt="">
+    <img src="https://i.ibb.co/Sn1pGv7/ff3.jpg" alt="">
+  </div>
+
+  <!-- Hero -->
+  <section>
+    <div class="glass">
+      <h1><i class="fas fa-bullseye"></i> Free Fire Panel - AimForge</h1>
+      <p>Enhance your aim, practice legally, and get better every match.</p>
+      <a href="#rules" class="btn">Get Started</a>
+    </div>
+  </section>
+
+  <!-- Rules -->
+  <section id="rules">
+    <div class="glass">
+      <h2><i class="fas fa-scroll"></i> Rules</h2>
+      <p><i class="fas fa-check-circle"></i> Use responsibly as a training tool.</p>
+      <p><i class="fas fa-check-circle"></i> No cheating in ranked matches.</p>
+      <p><i class="fas fa-check-circle"></i> Respect fair play.</p>
+    </div>
+  </section>
+
+  <!-- Install Guide -->
+  <section id="guide">
+    <div class="glass">
+      <h2><i class="fas fa-cogs"></i> Install Guide</h2>
+      <p><i class="fas fa-download"></i> Step 1: Download the panel using the link below.</p>
+      <p><i class="fas fa-folder-open"></i> Step 2: Extract the files.</p>
+      <p><i class="fas fa-play"></i> Step 3: Run the trainer and login.</p>
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section id="download">
+    <div class="glass">
+      <h2><i class="fas fa-cloud-download-alt"></i> Download</h2>
+      <div id="loginBox" class="login-box">
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
+        <button class="btn" onclick="checkLogin()">Login</button>
+        <p id="loginMsg" style="margin-top:10px; color:#f66;"></p>
+      </div>
+      <div id="downloadBox" style="display:none;">
+        <p>Access granted ✅</p>
+        <a href="#" id="downloadLink" class="btn"><i class="fas fa-download"></i> Download Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <section>
+    <div class="glass">
+      <p>&copy; 2025 AimForge Panel | Designed for practice only</p>
+    </div>
+  </section>
+
+  <!-- Music -->
+  <audio id="bgMusic" loop autoplay muted>
+    <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Komiku/Pixelated_Adventures/Komiku_-_03_-_Battle_of_Pogs.mp3" type="audio/mpeg">
+  </audio>
+  <div id="musicBtn"><i class="fas fa-volume-mute"></i></div>
+
+  <script>
+    // Preloader
+    window.addEventListener("load", () => {
+      const pre = document.getElementById("preloader");
+      pre.style.opacity = "0";
+      setTimeout(()=> pre.style.display="none", 1000);
+    });
+
+    // Login
+    function checkLogin(){
+      const u=document.getElementById("username").value;
+      const p=document.getElementById("password").value;
+      if(u==="Fourth" && p==="Naruto"){
+        document.getElementById("loginBox").style.display="none";
+        document.getElementById("downloadBox").style.display="block";
+        document.getElementById("loginMsg").textContent="";
+        // Replace this with your MediaFire link later
+        document.getElementById("downloadLink").href="https://www.mediafire.com/";
+      } else {
+        document.getElementById("loginMsg").textContent="Invalid credentials!";
+      }
+    }
+
+    // Music toggle
+    const music=document.getElementById("bgMusic");
+    const btn=document.getElementById("musicBtn");
+    btn.addEventListener("click",()=>{
+      if(music.muted){
+        music.muted=false;
+        btn.innerHTML='<i class="fas fa-volume-up"></i>';
+      } else {
+        music.muted=true;
+        btn.innerHTML='<i class="fas fa-volume-mute"></i>';
+      }
+    });
+  </script>
+</body>
+</html>
