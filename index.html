@@ -19,7 +19,7 @@
     .bg-slideshow {
       position:fixed; top:0; left:0; width:100%; height:100%;
       z-index:-1; overflow:hidden;
-      filter:brightness(0.5);
+      filter:brightness(0.4);
     }
     .bg-slideshow img {
       position:absolute; width:100%; height:100%; object-fit:cover;
@@ -39,24 +39,25 @@
 
     /* Glassmorphism panels */
     .glass {
-      background:rgba(255,255,255,0.05);
-      backdrop-filter:blur(12px);
+      background:rgba(0,255,255,0.05);
+      backdrop-filter:blur(15px);
       border:1px solid rgba(0,255,255,0.3);
-      border-radius:20px;
-      padding:40px 30px;
+      border-radius:25px;
+      padding:50px 40px;
       max-width:900px; margin:40px auto;
-      box-shadow:0 0 30px rgba(0,255,255,0.2);
+      box-shadow:0 0 40px rgba(0,255,255,0.25);
       transition:transform 0.3s, box-shadow 0.3s;
     }
     .glass:hover {
-      transform: translateY(-5px);
-      box-shadow:0 0 50px rgba(0,255,255,0.4);
+      transform: translateY(-8px);
+      box-shadow:0 0 60px rgba(0,255,255,0.4);
     }
 
     h1,h2,h3 {
       color:#0ff;
-      text-shadow:0 0 20px #0ff, 0 0 40px #f0f;
+      text-shadow:0 0 15px #0ff, 0 0 40px #f0f;
       font-family:'Orbitron', sans-serif;
+      margin-bottom:20px;
     }
     p {margin:15px 0; line-height:1.6; color:#ddd;}
 
@@ -64,44 +65,53 @@
     .btn {
       display:inline-block;
       margin:15px 10px;
-      padding:15px 30px;
+      padding:15px 35px;
       background:linear-gradient(135deg,#0ff,#f0f);
-      color:#000; font-weight:600;
-      border:none; border-radius:35px;
+      color:#000; font-weight:700;
+      border:none; border-radius:50px;
       cursor:pointer; transition:.3s;
       text-decoration:none;
-      font-size:1rem;
-      box-shadow:0 0 15px rgba(0,255,255,0.3);
+      font-size:1.1rem;
+      box-shadow:0 0 20px rgba(0,255,255,0.3);
     }
     .btn:hover {
       transform:scale(1.1);
-      box-shadow:0 0 25px #0ff, 0 0 50px #f0f;
+      box-shadow:0 0 35px #0ff, 0 0 60px #f0f;
     }
 
     /* Login inputs */
     .login-box input {
-      width:80%; padding:12px; margin:10px 0;
-      border:none; border-radius:10px;
+      width:85%; padding:15px; margin:12px 0;
+      border:none; border-radius:12px;
       text-align:center;
       background:rgba(255,255,255,0.1);
       color:#fff;
       font-size:1rem;
+      transition:0.3s;
+    }
+    .login-box input:focus {
+      outline:none;
+      background:rgba(0,255,255,0.1);
+      box-shadow:0 0 15px #0ff;
     }
     .login-box input::placeholder { color:#ccc; }
 
     /* Music control */
     #musicBtn {
-      position:fixed; bottom:20px; right:20px;
+      position:fixed; bottom:25px; right:25px;
       background:rgba(0,0,0,0.6);
-      border:1px solid #0ff; border-radius:50%;
-      width:55px; height:55px;
-      color:#0ff; font-size:22px;
+      border:2px solid #0ff; border-radius:50%;
+      width:60px; height:60px;
+      color:#0ff; font-size:24px;
       display:flex; align-items:center; justify-content:center;
       cursor:pointer;
       z-index:1000;
-      transition:transform 0.3s;
+      transition:transform 0.3s, box-shadow 0.3s;
     }
-    #musicBtn:hover {transform:scale(1.1);}
+    #musicBtn:hover {
+      transform:scale(1.15);
+      box-shadow:0 0 25px #0ff, 0 0 50px #f0f;
+    }
 
     /* Preloader */
     #preloader {
@@ -111,17 +121,17 @@
       z-index:2000; transition:opacity 1s ease;
     }
     #preloader i {
-      font-size:70px; color:#f0f; text-shadow:0 0 30px #f0f, 0 0 50px #0ff;
+      font-size:80px; color:#f0f; text-shadow:0 0 35px #f0f, 0 0 60px #0ff;
       animation:spin 2s linear infinite;
     }
     #preloader p {
-      margin-top:25px; color:#0ff; font-size:20px;
-      text-shadow:0 0 15px #0ff;
+      margin-top:25px; color:#0ff; font-size:22px;
+      text-shadow:0 0 20px #0ff;
     }
     @keyframes spin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 
     /* Footer */
-    footer p {color:#0ff; text-shadow:0 0 10px #0ff; margin:20px 0; font-weight:500;}
+    footer p {color:#0ff; text-shadow:0 0 15px #0ff; margin:20px 0; font-weight:600;}
   </style>
 </head>
 <body>
@@ -215,7 +225,7 @@
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("downloadBox").style.display = "block";
         document.getElementById("loginMsg").textContent = "";
-        document.getElementById("downloadLink").href = "https://www.mediafire.com/file/stobq3jy5gj3r2i/index.html/file";
+        document.getElementById("downloadLink").href = "https://www.mediafire.com/file/3fgdpngfkdc6nil/panel.html/file";
         document.getElementById("downloadLink").target = "_blank";
       } else {
         document.getElementById("loginMsg").textContent = "Invalid credentials!";
