@@ -1,249 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>FF Panel - AimForge</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Flashnode</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <style>
-    * {margin:0; padding:0; box-sizing:border-box; font-family:'Roboto', sans-serif;}
-    body, html {height:100%; background:#0a0a0a; color:#fff; overflow-x:hidden;}
+<style>
+/* Reset & Body */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto',sans-serif;}
+body{scroll-behavior:smooth;background:#0a0a0a;color:#fff;}
+a{text-decoration:none;color:inherit;}
 
-    /* Background */
-    .bg-slideshow {
-      position:fixed; top:0; left:0; width:100%; height:100%;
-      z-index:-1; overflow:hidden;
-      filter:brightness(0.4);
-    }
-    .bg-slideshow img {
-      position:absolute; width:100%; height:100%; object-fit:cover;
-      opacity:0; animation:slideShow 24s infinite;
-    }
-    .bg-slideshow img:nth-child(1){animation-delay:0s;}
-    .bg-slideshow img:nth-child(2){animation-delay:8s;}
-    .bg-slideshow img:nth-child(3){animation-delay:16s;}
-    @keyframes slideShow {
-      0%,100% {opacity:0;}
-      8%,33% {opacity:1;}
-    }
+/* Navbar */
+nav{
+  background:rgba(0,0,0,0.85);backdrop-filter:blur(5px);padding:15px 30px;
+  display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;
+}
+nav h2{font-family:'Orbitron',sans-serif;color:#0ff;text-shadow:0 0 10px #0ff,0 0 20px #f0f;}
+nav ul{list-style:none;display:flex;gap:20px;}
+nav ul li a{color:#fff;font-weight:500;transition:.3s;text-shadow:0 0 5px #0ff;}
+nav ul li a:hover{color:#0ff;text-shadow:0 0 15px #0ff,0 0 25px #f0f;}
 
-    section {
-      padding:60px 20px; text-align:center;
-    }
+/* Sections */
+section{padding:80px 20px;text-align:center;opacity:0;transform:translateY(20px);transition:all 1s ease;}
+.glass{background:rgba(0,255,255,0.05);backdrop-filter:blur(15px);border-radius:15px;padding:40px;max-width:900px;margin:40px auto;box-shadow:0 0 30px #0ff;}
+.glass:hover{transform:translateY(-5px);box-shadow:0 0 50px #0ff,0 0 80px #f0f;}
+h1,h2{font-family:'Orbitron',sans-serif;color:#0ff;text-shadow:0 0 15px #0ff,0 0 40px #f0f;margin-bottom:20px;}
+p{margin:15px 0;color:#ddd;text-shadow:0 0 5px #0ff;}
+.btn{display:inline-block;margin:10px;padding:12px 25px;background:linear-gradient(135deg,#0ff,#f0f);color:#111;font-weight:600;border-radius:8px;transition:.3s;text-shadow:0 0 5px #fff;}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 20px #0ff,0 0 40px #f0f;text-shadow:0 0 10px #fff;}
 
-    /* Glassmorphism panels */
-    .glass {
-      background:rgba(0,255,255,0.05);
-      backdrop-filter:blur(15px);
-      border:1px solid rgba(0,255,255,0.3);
-      border-radius:25px;
-      padding:50px 40px;
-      max-width:900px; margin:40px auto;
-      box-shadow:0 0 40px rgba(0,255,255,0.25);
-      transition:transform 0.3s, box-shadow 0.3s;
-    }
-    .glass:hover {
-      transform: translateY(-8px);
-      box-shadow:0 0 60px rgba(0,255,255,0.4);
-    }
+/* Panel Section */
+.panel-section{background:#111;color:#fff;border-radius:15px;max-width:900px;margin:40px auto;padding:40px;box-shadow:0 0 30px rgba(0,0,0,0.2);}
+.panel-section h2{color:#f68c1e;text-shadow:0 0 10px #f68c1e;}
+.panel-section .rules{text-align:left;background:#0008;padding:20px;border-radius:12px;margin-top:20px;box-shadow:0 0 10px rgba(0,255,255,0.1);}
+.panel-section .rules ul{list-style:disc inside;}
+.panel-section .login-box{margin-top:20px;}
+.panel-section .login-box input{width:80%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #0ff;text-align:center;background:#000;color:#fff;}
+.panel-section .login-box button{padding:12px 25px;background:#0ff;color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:600;margin-top:10px;}
+.panel-section .login-box button:hover{background:#0ffaa0;}
+#downloadBox{display:none;margin-top:15px;}
+#downloadBox a{display:inline-block;padding:12px 25px;background:#0ff;color:#111;border-radius:8px;text-decoration:none;font-weight:600;box-shadow:0 0 10px #0ff;transition:.3s;}
+#downloadBox a:hover{box-shadow:0 0 25px #0ff,0 0 50px #f0f;}
 
-    h1,h2,h3 {
-      color:#0ff;
-      text-shadow:0 0 15px #0ff, 0 0 40px #f0f;
-      font-family:'Orbitron', sans-serif;
-      margin-bottom:20px;
-    }
-    p {margin:15px 0; line-height:1.6; color:#ddd;}
+/* Anime Section */
+.anime-section{background:#111;color:#fff;border-radius:15px;max-width:1000px;margin:40px auto;padding:40px;box-shadow:0 0 30px rgba(0,0,0,0.2);}
+.anime-section h2{color:#f0f;text-shadow:0 0 10px #f0f;}
+.anime-library{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;margin-top:20px;}
+.anime-card{background:#0008;padding:15px;border-radius:12px;width:200px;text-align:center;cursor:pointer;box-shadow:0 0 10px #0ff;transition:.3s;}
+.anime-card:hover{box-shadow:0 0 25px #0ff,0 0 50px #f0f;transform:scale(1.05);}
+.anime-card img{width:100%;border-radius:10px;}
+.anime-card h4{margin-top:10px;color:#0ff;text-shadow:0 0 5px #0ff;}
+.episode-list{display:none;text-align:left;margin-top:10px;}
+.episode-list li{margin:5px 0;cursor:pointer;}
+.favorite{color:#f0f!important;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000b;align-items:center;justify-content:center;z-index:2000;}
+.modal video{max-width:90%;max-height:80%;border-radius:12px;box-shadow:0 0 30px #0ff;}
+.modal .close{position:absolute;top:20px;right:30px;font-size:30px;color:#fff;cursor:pointer;}
 
-    /* Buttons */
-    .btn {
-      display:inline-block;
-      margin:15px 10px;
-      padding:15px 35px;
-      background:linear-gradient(135deg,#0ff,#f0f);
-      color:#000; font-weight:700;
-      border:none; border-radius:50px;
-      cursor:pointer; transition:.3s;
-      text-decoration:none;
-      font-size:1.1rem;
-      box-shadow:0 0 20px rgba(0,255,255,0.3);
-    }
-    .btn:hover {
-      transform:scale(1.1);
-      box-shadow:0 0 35px #0ff, 0 0 60px #f0f;
-    }
+/* Auth Section */
+.auth-section{background:#111;padding:40px;border-radius:15px;max-width:500px;margin:40px auto;box-shadow:0 0 30px rgba(0,0,0,0.2);}
+.auth-section input{width:80%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #0ff;background:#000;color:#fff;text-align:center;}
+.auth-section button{padding:12px 25px;background:#0ff;color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:600;margin-top:10px;}
+.auth-msg{color:#f66;margin-top:10px;}
 
-    /* Login inputs */
-    .login-box input {
-      width:85%; padding:15px; margin:12px 0;
-      border:none; border-radius:12px;
-      text-align:center;
-      background:rgba(255,255,255,0.1);
-      color:#fff;
-      font-size:1rem;
-      transition:0.3s;
-    }
-    .login-box input:focus {
-      outline:none;
-      background:rgba(0,255,255,0.1);
-      box-shadow:0 0 15px #0ff;
-    }
-    .login-box input::placeholder { color:#ccc; }
-
-    /* Music control */
-    #musicBtn {
-      position:fixed; bottom:25px; right:25px;
-      background:rgba(0,0,0,0.6);
-      border:2px solid #0ff; border-radius:50%;
-      width:60px; height:60px;
-      color:#0ff; font-size:24px;
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer;
-      z-index:1000;
-      transition:transform 0.3s, box-shadow 0.3s;
-    }
-    #musicBtn:hover {
-      transform:scale(1.15);
-      box-shadow:0 0 25px #0ff, 0 0 50px #f0f;
-    }
-
-    /* Preloader */
-    #preloader {
-      position:fixed; top:0; left:0; width:100%; height:100%;
-      background:#000; display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      z-index:2000; transition:opacity 1s ease;
-    }
-    #preloader i {
-      font-size:80px; color:#f0f; text-shadow:0 0 35px #f0f, 0 0 60px #0ff;
-      animation:spin 2s linear infinite;
-    }
-    #preloader p {
-      margin-top:25px; color:#0ff; font-size:22px;
-      text-shadow:0 0 20px #0ff;
-    }
-    @keyframes spin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
-
-    /* Footer */
-    footer p {color:#0ff; text-shadow:0 0 15px #0ff; margin:20px 0; font-weight:600;}
-  </style>
+/* Admin Section */
+.admin-section{background:#111;padding:40px;border-radius:15px;max-width:700px;margin:40px auto;box-shadow:0 0 30px rgba(0,0,0,0.2);}
+.admin-section input, .admin-section textarea, .admin-section select{width:90%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #0ff;background:#000;color:#fff;}
+.admin-section button{padding:12px 25px;background:#0ff;color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:600;margin-top:10px;}
+.admin-section button:hover{background:#0ffaa0;}
+</style>
 </head>
 <body>
-  <!-- Preloader -->
-  <div id="preloader">
-    <i class="fas fa-fire"></i>
-    <p>Loading Panel…</p>
+
+<nav>
+  <h2>Flashnode</h2>
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#panel">Panel</a></li>
+    <li><a href="#anime">Anime</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+
+<section id="home" class="glass">
+  <h1>Flashnode Creations</h1>
+  <p>Access panels and training tools in one place.</p>
+</section>
+
+<section id="panel" class="panel-section">
+  <h2>AimForge Panel</h2>
+  <p>Login to access the panel:</p>
+  <div class="rules">
+    <h3>Rules & Guidelines:</h3>
+    <ul>
+      <li>Use this panel only as a training tool.</li>
+      <li>No cheating in ranked matches.</li>
+      <li>Respect fair play and others.</li>
+      <li>Keep your credentials secure.</li>
+      <li>Report bugs responsibly.</li>
+    </ul>
   </div>
-
-  <!-- Background -->
-  <div class="bg-slideshow">
-    <img src="https://i.ibb.co/2nRCfny/ff1.jpg" alt="">
-    <img src="https://i.ibb.co/YR3XrPq/ff2.jpg" alt="">
-    <img src="https://i.ibb.co/Sn1pGv7/ff3.jpg" alt="">
+  <div class="login-box">
+    <input type="text" id="panelUser" placeholder="Username">
+    <input type="password" id="panelPass" placeholder="Password">
+    <button onclick="checkPanelLogin()">Login</button>
+    <p id="panelMsg" class="auth-msg"></p>
   </div>
+  <div id="downloadBox">
+    <p>Access granted ✅</p>
+    <a href="https://www.mediafire.com/file/3fgdpngfkdc6nil/panel.html/file" target="_blank">Download Now</a>
+  </div>
+</section>
 
-  <!-- Hero -->
-  <section>
-    <div class="glass">
-      <h1><i class="fas fa-bullseye"></i> Free Fire Panel - AimForge</h1>
-      <p>Enhance your aim, practice legally, and get better every match.</p>
-      <a href="#rules" class="btn">Get Started</a>
-    </div>
-  </section>
+<section id="auth" class="auth-section">
+  <h2>User Access</h2>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="loginUser()">Sign In / Sign Up</button>
+  <p id="authMsg" class="auth-msg"></p>
+</section>
 
-  <!-- Rules -->
-  <section id="rules">
-    <div class="glass">
-      <h2><i class="fas fa-scroll"></i> Rules</h2>
-      <p><i class="fas fa-check-circle"></i> Use responsibly as a training tool.</p>
-      <p><i class="fas fa-check-circle"></i> No cheating in ranked matches.</p>
-      <p><i class="fas fa-check-circle"></i> Respect fair play.</p>
-    </div>
-  </section>
+<section id="adminLogin" class="auth-section">
+  <h2>Admin Access</h2>
+  <input type="text" id="adminUserInput" placeholder="Admin Username">
+  <input type="password" id="adminPassInput" placeholder="Admin Password">
+  <button onclick="adminLogin()">Login as Admin</button>
+  <p id="adminMsg" class="auth-msg"></p>
+</section>
 
-  <!-- Install Guide -->
-  <section id="guide">
-    <div class="glass">
-      <h2><i class="fas fa-cogs"></i> Install Guide</h2>
-      <p><i class="fas fa-download"></i> Step 1: Download the panel using the link below.</p>
-      <p><i class="fas fa-folder-open"></i> Step 2: Extract the files.</p>
-      <p><i class="fas fa-play"></i> Step 3: Run the trainer and login.</p>
-    </div>
-  </section>
+<section id="anime" class="anime-section" style="display:none;">
+  <h2>Anime Library</h2>
+  <input type="text" id="searchAnime" placeholder="Search anime..." oninput="renderAnime()">
+  <div class="anime-library" id="animeLibrary"></div>
+</section>
 
-  <!-- Download -->
-  <section id="download">
-    <div class="glass">
-      <h2><i class="fas fa-cloud-download-alt"></i> Download</h2>
-      <div id="loginBox" class="login-box">
-        <input type="text" id="username" placeholder="Username" />
-        <input type="password" id="password" placeholder="Password" />
-        <button class="btn" onclick="checkLogin()">Login</button>
-        <p id="loginMsg" style="margin-top:10px; color:#f66;"></p>
-      </div>
-      <div id="downloadBox" style="display:none;">
-        <p>Access granted ✅</p>
-        <a href="#" id="downloadLink" class="btn" target="_blank">
-          <i class="fas fa-download"></i> Download Now
-        </a>
-      </div>
-    </div>
-  </section>
+<section id="admin" class="admin-section" style="display:none;">
+  <h2>Admin Dashboard</h2>
+  <p>Add new anime:</p>
+  <input type="text" id="animeTitle" placeholder="Anime Title">
+  <input type="text" id="animeGenre" placeholder="Genre">
+  <input type="text" id="animeThumb" placeholder="Thumbnail URL">
+  <textarea id="animeDesc" placeholder="Description"></textarea>
+  <button onclick="addAnime()">Add Anime</button>
+  <hr>
+  <h3>Add Episode to Anime</h3>
+  <select id="animeSelect"></select>
+  <input type="text" id="episodeTitle" placeholder="Episode Title">
+  <input type="file" id="episodeFile" accept="video/*">
+  <button onclick="addEpisode()">Upload Episode</button>
+</section>
 
-  <!-- Footer -->
-  <footer>
-    <div class="glass">
-      <p>&copy; 2025 AimForge Panel | Designed for practice only</p>
-    </div>
-  </footer>
+<div class="modal" id="videoModal">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <video id="videoPlayer" controls></video>
+</div>
 
-  <!-- Music -->
-  <audio id="bgMusic" loop autoplay muted>
-    <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Komiku/Pixelated_Adventures/Komiku_-_03_-_Battle_of_Pogs.mp3" type="audio/mpeg">
-  </audio>
-  <div id="musicBtn"><i class="fas fa-volume-mute"></i></div>
+<section id="about" class="glass">
+  <h2>About Flashnode</h2>
+  <p>Flashnode provides training panels and anime library for practice and entertainment. Users must login to access content.</p>
+  <p>&copy; 2025 Flashnode. All rights reserved.</p>
+</section>
 
-  <script>
-    // Preloader
-    window.addEventListener("load", () => {
-      const pre = document.getElementById("preloader");
-      pre.style.opacity = "0";
-      setTimeout(()=> pre.style.display="none", 1000);
-    });
+<footer>
+  &copy; 2025 Flashnode | All rights reserved | Designed by Flashnode Team
+</footer>
 
-    // Login
-    function checkLogin(){
-      const u = document.getElementById("username").value;
-      const p = document.getElementById("password").value;
-      if(u === "Fourth" && p === "Naruto"){
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("downloadBox").style.display = "block";
-        document.getElementById("loginMsg").textContent = "";
-        document.getElementById("downloadLink").href = "https://www.mediafire.com/file/3fgdpngfkdc6nil/panel.html/file";
-        document.getElementById("downloadLink").target = "_blank";
-      } else {
-        document.getElementById("loginMsg").textContent = "Invalid credentials!";
-      }
+<script>
+// Sections Fade-In
+const sections=document.querySelectorAll("section");
+function reveal(){const t=window.innerHeight/5*4;sections.forEach(s=>{if(s.getBoundingClientRect().top<t){s.style.opacity="1";s.style.transform="translateY(0)";}});}
+window.addEventListener("scroll",reveal);window.addEventListener("load",reveal);
+
+// Panel Login
+function checkPanelLogin(){
+  const u=document.getElementById("panelUser").value.trim();
+  const p=document.getElementById("panelPass").value.trim();
+  const msg=document.getElementById("panelMsg");
+  if(u==="Fourth" && p==="Naruto"){
+    document.getElementById("downloadBox").style.display="block";
+    document.querySelector(".login-box").style.display="none";msg.textContent="";
+  } else msg.textContent="Invalid credentials!";
+}
+
+// Users Storage
+let currentUser = null;
+function loginUser(){
+  const u=document.getElementById("username").value.trim();
+  const p=document.getElementById("password").value.trim();
+  if(!u || !p){document.getElementById("authMsg").textContent="Enter username and password!";return;}
+  let users=JSON.parse(localStorage.getItem("flashnodeUsers")||"{}");
+  if(users[u]){
+    if(users[u].password===p){currentUser=u;document.getElementById("auth").style.display="none";document.getElementById("anime").style.display="block";document.getElementById("authMsg").textContent="";renderAnime();}
+    else{document.getElementById("authMsg").textContent="Wrong password!";}
+  }else{
+    users[u]={password:p,favorites:[],history:[]};
+    localStorage.setItem("flashnodeUsers",JSON.stringify(users));
+    currentUser=u;
+    document.getElementById("auth").style.display="none";
+    document.getElementById("anime").style.display="block";
+    renderAnime();
+  }
+}
+
+// Anime Library
+let animeData = JSON.parse(localStorage.getItem("flashnodeAnime")||"[]");
+
+function addAnime(){
+  const t=document.getElementById("animeTitle").value;
+  const g=document.getElementById("animeGenre").value;
+  const thumb=document.getElementById("animeThumb").value;
+  const desc=document.getElementById("animeDesc").value;
+  if(!t||!g||!thumb||!desc){alert("Fill all fields!");return;}
+  animeData.push({title:t,genre:g,thumb:thumb,desc:desc,episodes:[]});
+  localStorage.setItem("flashnodeAnime",JSON.stringify(animeData));
+  alert("Anime added!");
+  document.getElementById("animeTitle").value="";document.getElementById("animeGenre").value="";document.getElementById("animeThumb").value="";document.getElementById("animeDesc").value="";
+  updateAnimeSelect();
+  renderAnime();
+}
+
+function renderAnime(){
+  const search = document.getElementById("searchAnime").value.toLowerCase();
+  const container = document.getElementById("animeLibrary");
+  container.innerHTML = "";
+  animeData.forEach((a,i)=>{
+    if(a.title.toLowerCase().includes(search)){
+      const card = document.createElement("div");
+      card.className = "anime-card";
+      card.innerHTML = `<img src="${a.thumb}"><h4>${a.title}</h4><p>${a.genre}</p>`;
+      const eps = document.createElement("ul");
+      eps.className = "episode-list";
+      a.episodes.forEach((e,j)=>{
+        const li = document.createElement("li");
+        li.innerHTML = `${e.title} 
+          <button onclick="playEpisode(${i},${j})" style="margin-left:5px;">Watch</button>
+          <a href="${e.url}" download style="margin-left:5px;padding:2px 6px;background:#0ff;color:#000;border-radius:5px;text-decoration:none;">Download</a>`;
+        eps.appendChild(li);
+      });
+      card.appendChild(eps);
+      card.onclick = ()=>{eps.style.display = eps.style.display==="none"?"block":"none";};
+      container.appendChild(card);
     }
+  });
+}
 
-    // Music toggle
-    const music = document.getElementById("bgMusic");
-    const btn = document.getElementById("musicBtn");
-    btn.addEventListener("click", ()=>{
-      if(music.muted){
-        music.muted = false;
-        btn.innerHTML = '<i class="fas fa-volume-up"></i>';
-      } else {
-        music.muted = true;
-        btn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-      }
-    });
-  </script>
+function playEpisode(animeIndex, epIndex){
+  const video=document.getElementById("videoPlayer");
+  video.src=animeData[animeIndex].episodes[epIndex].url;
+  document.getElementById("videoModal").style.display="flex";
+  let users=JSON.parse(localStorage.getItem("flashnodeUsers"));
+  if(currentUser){
+    users[currentUser].history.push({anime:animeData[animeIndex].title,episode:animeData[animeIndex].episodes[epIndex].title});
+    localStorage.setItem("flashnodeUsers",JSON.stringify(users));
+  }
+}
+
+function closeModal(){document.getElementById("videoModal").style.display="none";document.getElementById("videoPlayer").pause();}
+
+// Admin
+const adminUser = "admin";
+const adminPass = "flashnode";
+
+function adminLogin(){
+  const u = document.getElementById("adminUserInput").value.trim();
+  const p = document.getElementById("adminPassInput").value.trim();
+  const msg = document.getElementById("adminMsg");
+  if(u === adminUser && p === adminPass){
+    document.getElementById("adminLogin").style.display = "none";
+    document.getElementById("admin").style.display = "block";
+    msg.textContent = "";
+    updateAnimeSelect();
+  } else msg.textContent = "Invalid admin credentials!";
+}
+
+function updateAnimeSelect(){
+  const select=document.getElementById("animeSelect");
+  select.innerHTML="";
+  animeData.forEach((a,i)=>{const opt=document.createElement("option");opt.value=i;opt.textContent=a.title;select.appendChild(opt);});
+}
+
+function addEpisode(){
+  const animeIndex=document.getElementById("animeSelect").value;
+  const epTitle=document.getElementById("episodeTitle").value;
+  const file=document.getElementById("episodeFile").files[0];
+  if(!animeIndex || !epTitle || !file){alert("Fill all fields and select a file!"); return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const url=e.target.result;
+    animeData[animeIndex].episodes.push({title:epTitle,url:url});
+    localStorage.setItem("flashnodeAnime",JSON.stringify(animeData));
+    alert("Episode uploaded!");
+    document.getElementById("episodeTitle").value="";
+    document.getElementById("episodeFile").value="";
+    renderAnime();
+  }
+  reader.readAsDataURL(file);
+}
+</script>
 </body>
 </html>
