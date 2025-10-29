@@ -3,64 +3,107 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlashNode</title>
+  <title>⚡ FlashNode API Key Generator</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+    }
     body {
-      background: radial-gradient(circle at top, #0f172a, #020617);
-      color: white;
-      font-family: "Segoe UI", sans-serif;
-      height: 100vh;
+      background: #0d1117;
+      color: #c9d1d9;
+      margin: 0;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      height: 100vh;
     }
     h1 {
-      font-size: 3rem;
-      background: linear-gradient(90deg, #22d3ee, #0ea5e9, #22d3ee);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: pulse 4s infinite;
+      color: #58a6ff;
+      margin-bottom: 8px;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-    p {
-      font-size: 1.2rem;
-      max-width: 600px;
-      margin-top: 20px;
-      color: #94a3b8;
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 30px;
+      width: 400px;
+      max-width: 90%;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(88, 166, 255, 0.1);
     }
     button {
-      margin-top: 30px;
-      background: #0ea5e9;
-      border: none;
+      background: #238636;
       color: white;
-      padding: 12px 28px;
-      border-radius: 10px;
-      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
       cursor: pointer;
-      transition: all 0.3s;
+      margin-top: 16px;
+      font-size: 1rem;
+      transition: 0.2s;
     }
     button:hover {
-      background: #22d3ee;
-      transform: translateY(-3px);
+      background: #2ea043;
     }
-    footer {
-      position: absolute;
-      bottom: 15px;
-      font-size: 0.9rem;
-      color: #475569;
+    .key-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 16px;
+      word-break: break-all;
+      color: #7ee787;
+      font-family: monospace;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #8b949e;
     }
   </style>
 </head>
 <body>
-  <h1>⚡ FlashNode</h1>
-  <p>Welcome to the next generation of open collaboration and AI-powered development.</p>
-  <button onclick="alert('FlashNode coming soon 🚀')">Explore</button>
-  <footer>© 2025 FlashNode.fun — Built by DarkPlayz</footer>
+  <div class="card">
+    <h1>FlashNode API Key Generator</h1>
+    <p>Create a secure API key for your projects 🔐</p>
+
+    <button onclick="generateKey()">Generate New Key</button>
+
+    <div id="keyContainer" class="key-box" style="display:none;"></div>
+  </div>
+
+  <div class="footer">
+    ⚡ Powered by <strong>FlashNode.fun</strong>
+  </div>
+
+  <script>
+    function generateKey() {
+      const prefix = "sk_flashnode_";
+      const randomPart = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+      const key = prefix + randomPart;
+
+      const keyBox = document.getElementById("keyContainer");
+      keyBox.style.display = "block";
+      keyBox.textContent = key;
+
+      // optional: save to localStorage
+      localStorage.setItem("flashnode_key", key);
+    }
+
+    // Load saved key if exists
+    window.onload = () => {
+      const saved = localStorage.getItem("flashnode_key");
+      if (saved) {
+        const keyBox = document.getElementById("keyContainer");
+        keyBox.style.display = "block";
+        keyBox.textContent = saved;
+      }
+    };
+  </script>
 </body>
 </html>
