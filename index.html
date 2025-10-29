@@ -1,301 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AniScroll Futuristic + Seasons</title>
-<style>
-/* ---------- Global Styles ---------- */
-* { box-sizing: border-box; margin:0; padding:0; font-family:'Poppins', sans-serif; transition: all 0.3s; }
-body { background:#0a0a1a; color:#eee; overflow-x:hidden; position:relative; }
-nav { background:rgba(20,20,20,0.9); padding:15px 30px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 0 15px #00fff0; }
-nav .logo { font-size:28px; font-weight:bold; color:#00fff0; letter-spacing:1px; text-shadow:0 0 10px #00fff0; }
-nav ul { display:flex; list-style:none; }
-nav ul li { margin-left:25px; }
-nav ul li a { color:#eee; text-decoration:none; font-weight:500; padding:6px 12px; border-radius:5px; cursor:pointer; }
-nav ul li a.active, nav ul li a:hover { background:#ff00ff; color:#fff; box-shadow:0 0 10px #ff00ff; }
-
-/* ---------- Particles ---------- */
-body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:radial-gradient(circle at center,#0a0a1a,#000 70%);}
-.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;pointer-events:none;}
-.particle{position:absolute;width:2px;height:2px;background:#00fff0;border-radius:50%;opacity:0.7;animation: float 5s linear infinite;}
-@keyframes float{0%{transform:translateY(0) translateX(0);}100%{transform:translateY(-100vh) translateX(50px);}}
-
-/* ---------- Sections ---------- */
-section{padding:50px 30px; display:none; opacity:0; transform:translateY(20px); transition: all 0.5s ease;}
-section.active{display:block;opacity:1;transform:translateY(0);}
-h1{color:#00fff0;margin-bottom:25px;text-shadow:0 0 10px #00fff0;}
-
-/* ---------- Anime Grid ---------- */
-.anime-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:25px;}
-.anime-card{background:#4b0082;border-radius:12px;overflow:hidden;cursor:pointer;position:relative;box-shadow:0 0 10px #00fff0 inset;transition: transform 0.5s, box-shadow 0.5s;}
-.anime-card:hover{transform:perspective(600px) rotateY(5deg) rotateX(3deg) scale(1.05);box-shadow:0 0 20px #00fff0,0 0 40px #ff00ff inset;}
-.anime-card img{width:100%;display:block;border-radius:12px 12px 0 0;transition: transform 0.6s;}
-.anime-card:hover img{transform:scale(1.1) rotate(-1deg);}
-.anime-info{padding:15px;}
-.anime-info h3{font-size:18px;color:#00fff0;margin-bottom:5px;text-shadow:0 0 5px #00fff0;}
-.anime-info p{font-size:14px;color:#ccc;height:50px;overflow:hidden;}
-.new-badge{position:absolute;top:10px;left:10px;background:#ff00ff;color:#fff;font-size:12px;font-weight:bold;padding:3px 6px;border-radius:5px;animation:pulse 1.5s infinite;}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.2);opacity:0.8;}}
-
-/* ---------- Buttons ---------- */
-.btn{display:inline-block;padding:8px 15px;margin:5px 5px 0 0;background:#ff00ff;color:#fff;border-radius:5px;font-weight:500;text-decoration:none;transition: all 0.4s ease;}
-.btn:hover{background:#ff00aa;transform:scale(1.1) translateY(-3px);box-shadow:0 0 20px #ff00aa;}
-
-/* ---------- Forms ---------- */
-input,textarea{width:100%;padding:12px 15px;margin-bottom:15px;border:none;border-radius:8px;background:#2a2a2a;color:#eee;font-size:14px;box-shadow: inset 0 0 10px #000;transition: all 0.3s ease;}
-input:focus,textarea:focus{box-shadow:0 0 15px #00fff0;outline:none;transform: scale(1.02);}
-
-/* ---------- Admin ---------- */
-.admin-login,.admin-form{max-width:400px;margin:auto;background:#1f1f1f;padding:30px;border-radius:12px;box-shadow:0 0 20px #00fff0;text-align:center;}
-.admin-form{display:none;}
-.modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1f1f1f;padding:20px;border-radius:10px;box-shadow:0 0 25px #00fff0;z-index:999;display:none;width:90%;max-width:500px;}
-.modal h3{color:#00fff0;margin-bottom:15px;}
-.modal input{margin-bottom:10px;}
-.close-modal{position:absolute;top:10px;right:15px;color:#ff00ff;font-weight:bold;cursor:pointer;font-size:18px;}
-
-/* ---------- Responsive ---------- */
-@media(max-width:768px){nav ul{flex-direction:column;gap:10px;}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlashNode</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: white;
+      font-family: "Segoe UI", sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+      background: linear-gradient(90deg, #22d3ee, #0ea5e9, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: pulse 4s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin-top: 20px;
+      color: #94a3b8;
+    }
+    button {
+      margin-top: 30px;
+      background: #0ea5e9;
+      border: none;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: #22d3ee;
+      transform: translateY(-3px);
+    }
+    footer {
+      position: absolute;
+      bottom: 15px;
+      font-size: 0.9rem;
+      color: #475569;
+    }
+  </style>
 </head>
 <body>
-<div class="particles" id="particles"></div>
-
-<nav>
-  <div class="logo">AniScroll AI</div>
-  <ul>
-    <li><a onclick="showSection('home')" class="active">Home</a></li>
-    <li><a onclick="showSection('search')">Search</a></li>
-    <li><a onclick="showSection('admin')">Admin</a></li>
-    <li><a onclick="showSection('disclaimer')">Disclaimer</a></li>
-    <li><a onclick="showSection('dmca')">DMCA</a></li>
-    <li><a onclick="showSection('contact')">Contact Us</a></li>
-  </ul>
-</nav>
-
-<section id="home" class="active">
-  <h1>Latest Anime</h1>
-  <div class="anime-grid" id="animeGrid"></div>
-</section>
-
-<section id="search">
-  <h1>Search Anime</h1>
-  <input type="text" id="searchInput" placeholder="Type anime name..." />
-  <div class="anime-grid" id="searchResults"></div>
-</section>
-
-<section id="admin">
-  <h1>Admin Panel</h1>
-  <div class="admin-login" id="loginDiv">
-    <h3>Login</h3>
-    <input type="text" id="adminUser" placeholder="Username">
-    <input type="password" id="adminPass" placeholder="Password">
-    <button onclick="loginAdmin()">Login</button>
-  </div>
-  <div class="admin-form" id="adminFormDiv">
-    <h3>Add Anime</h3>
-    <form id="adminForm">
-      <input type="text" id="title" placeholder="Anime Title" required>
-      <input type="text" id="desc" placeholder="Description" required>
-      <input type="text" id="img" placeholder="Image URL" required>
-      <label><input type="checkbox" id="new"> Mark as New</label><br><br>
-      <button type="submit">Add Anime</button>
-    </form>
-    <div id="manageAnimeList"></div>
-  </div>
-</section>
-
-<!-- Season & Episode Modal -->
-<div class="modal" id="seasonModal">
-  <span class="close-modal" onclick="closeModal()">&times;</span>
-  <h3>Manage Seasons & Episodes</h3>
-  <input type="number" id="seasonNumber" placeholder="Season Number" required>
-  <input type="text" id="episodeTitle" placeholder="Episode Title" required>
-  <input type="number" id="episodeNumber" placeholder="Episode Number" required>
-  <input type="text" id="episodeDownload" placeholder="Download Link" required>
-  <button onclick="addEpisode()">Add Episode</button>
-  <div id="seasonList" style="margin-top:15px;"></div>
-</div>
-
-<section id="disclaimer">
-  <h1>Disclaimer</h1>
-  <p>This website does not host content. All anime are linked externally. Contact us for removal requests.</p>
-</section>
-
-<section id="dmca">
-  <h1>DMCA</h1>
-  <p>If you believe your copyrighted content is on this site, contact <a href="mailto:darkplayzmc2@gmail.com">darkplayzmc2@gmail.com</a>.</p>
-</section>
-
-<section id="contact">
-  <h1>Contact Us</h1>
-  <p>Email: <a href="mailto:darkplayzmc2@gmail.com">darkplayzmc2@gmail.com</a></p>
-  <form class="contact-form">
-    <input type="text" placeholder="Your Name" required>
-    <input type="email" placeholder="Your Email" required>
-    <textarea placeholder="Your Request" rows="5" required></textarea>
-    <button type="submit">Send Request</button>
-  </form>
-</section>
-
-<footer>
-  &copy; 2025 AniScroll AI | All rights reserved.
-</footer>
-
-<script>
-// ---------- Particles ----------
-const particlesContainer=document.getElementById('particles');
-for(let i=0;i<80;i++){
-  const p=document.createElement('div');
-  p.className='particle';
-  p.style.left=Math.random()*100+'%';
-  p.style.top=Math.random()*100+'%';
-  p.style.width=Math.random()*3+2+'px';
-  p.style.height=Math.random()*3+2+'px';
-  p.style.animationDuration=(5+Math.random()*5)+'s';
-  particlesContainer.appendChild(p);
-}
-
-// ---------- Anime Data ----------
-let animeList = [];
-let currentAnimeIndex=null;
-
-// ---------- Render Homepage ----------
-const grid=document.getElementById('animeGrid');
-function renderAnime() {
-  grid.innerHTML='';
-  animeList.forEach((anime,i)=>{
-    const card=document.createElement('div');
-    card.className='anime-card';
-    card.style.animation=`fadeInUp 0.5s ease forwards ${i*0.1}s`;
-    card.innerHTML=`${anime.new?'<div class="new-badge">NEW</div>':''}
-      <img src="${anime.img}" alt="${anime.title}">
-      <div class="anime-info">
-        <h3>${anime.title}</h3>
-        <p>${anime.desc}</p>
-        <button class="btn" onclick="openSeasonModal(${i})">Manage Seasons</button>
-      </div>`;
-    grid.appendChild(card);
-  });
-  renderManageAnimeList();
-}
-
-// ---------- Section Navigation ----------
-function showSection(id){
-  document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('nav ul li a').forEach(a=>a.classList.remove('active'));
-  document.querySelector(`nav ul li a[onclick="showSection('${id}')"]`).classList.add('active');
-}
-
-// ---------- Search ----------
-const searchInput=document.getElementById('searchInput');
-const searchResults=document.getElementById('searchResults');
-searchInput?.addEventListener('input',()=>{
-  const q=searchInput.value.toLowerCase();
-  searchResults.innerHTML='';
-  animeList.filter(a=>a.title.toLowerCase().includes(q)).forEach((anime,i)=>{
-    const card=document.createElement('div');
-    card.className='anime-card';
-    card.style.animation=`fadeInUp 0.5s ease forwards ${i*0.1}s`;
-    card.innerHTML=`${anime.new?'<div class="new-badge">NEW</div>':''}
-      <img src="${anime.img}" alt="${anime.title}">
-      <div class="anime-info">
-        <h3>${anime.title}</h3>
-        <p>${anime.desc}</p>
-      </div>`;
-    searchResults.appendChild(card);
-  });
-});
-
-// ---------- Admin ----------
-const ADMIN_USER='admin';
-const ADMIN_PASS='1234';
-function loginAdmin(){
-  const user=document.getElementById('adminUser').value;
-  const pass=document.getElementById('adminPass').value;
-  if(user===ADMIN_USER && pass===ADMIN_PASS){
-    document.getElementById('loginDiv').style.display='none';
-    document.getElementById('adminFormDiv').style.display='block';
-    alert('AI Admin Access Granted. Welcome!');
-  } else { alert('Access Denied!'); }
-}
-
-const adminForm=document.getElementById('adminForm');
-adminForm?.addEventListener('submit',e=>{
-  e.preventDefault();
-  const newAnime={
-    title:document.getElementById('title').value,
-    desc:document.getElementById('desc').value,
-    img:document.getElementById('img').value,
-    new:document.getElementById('new').checked,
-    seasons:[]
-  };
-  animeList.unshift(newAnime);
-  renderAnime();
-  alert('AI: Anime added successfully!');
-  adminForm.reset();
-});
-
-// ---------- Manage Anime List in Admin ----------
-function renderManageAnimeList(){
-  const div=document.getElementById('manageAnimeList');
-  div.innerHTML='<h3>Anime List</h3>';
-  animeList.forEach((anime,i)=>{
-    const btn=document.createElement('button');
-    btn.textContent=`${anime.title} - Manage Seasons`;
-    btn.className='btn';
-    btn.style.margin='5px';
-    btn.onclick=()=>openSeasonModal(i);
-    div.appendChild(btn);
-  });
-}
-
-// ---------- Season Modal ----------
-const modal=document.getElementById('seasonModal');
-function openSeasonModal(index){
-  currentAnimeIndex=index;
-  document.getElementById('seasonList').innerHTML='';
-  modal.style.display='block';
-  renderSeasonList();
-}
-function closeModal(){modal.style.display='none';}
-
-// ---------- Add Episode ----------
-function addEpisode(){
-  const sNum=parseInt(document.getElementById('seasonNumber').value);
-  const eTitle=document.getElementById('episodeTitle').value;
-  const eNum=parseInt(document.getElementById('episodeNumber').value);
-  const eLink=document.getElementById('episodeDownload').value;
-  if(!animeList[currentAnimeIndex].seasons.some(s=>s.seasonNumber===sNum)){
-    animeList[currentAnimeIndex].seasons.push({seasonNumber:sNum,episodes:[]});
-  }
-  const season=animeList[currentAnimeIndex].seasons.find(s=>s.seasonNumber===sNum);
-  season.episodes.push({title:eTitle,number:eNum,download:eLink});
-  document.getElementById('seasonNumber').value='';
-  document.getElementById('episodeTitle').value='';
-  document.getElementById('episodeNumber').value='';
-  document.getElementById('episodeDownload').value='';
-  alert(`Episode added to Season ${sNum}`);
-  renderSeasonList();
-}
-
-// ---------- Render Season List ----------
-function renderSeasonList(){
-  const div=document.getElementById('seasonList');
-  div.innerHTML='';
-  const anime=animeList[currentAnimeIndex];
-  anime.seasons.forEach(season=>{
-    const sDiv=document.createElement('div');
-    sDiv.innerHTML=`<h4>Season ${season.seasonNumber}</h4>`;
-    season.episodes.forEach(ep=>{
-      const epDiv=document.createElement('div');
-      epDiv.innerHTML=`Episode ${ep.number}: ${ep.title} - <a href="${ep.download}" target="_blank">Download</a>`;
-      sDiv.appendChild(epDiv);
-    });
-    div.appendChild(sDiv);
-  });
-}
-</script>
+  <h1>⚡ FlashNode</h1>
+  <p>Welcome to the next generation of open collaboration and AI-powered development.</p>
+  <button onclick="alert('FlashNode coming soon 🚀')">Explore</button>
+  <footer>© 2025 FlashNode.fun — Built by DarkPlayz</footer>
 </body>
 </html>
