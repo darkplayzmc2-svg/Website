@@ -1,361 +1,858 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Prompt Wizard Pro ⚡</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at top, #0a0f1a, #000);
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAGLE EYE MONITOR v0.1 (FlashNode Integration)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --safe-color: #10b981; /* Emerald Green */
+            --compromised-color: #ef4444; /* Red */
+            --moderate-color: #facc15; /* Yellow */
+            --accent-color: #3b82f6; /* Blue */
+            --flashnode-color: #06b6d4; /* Cyan/Teal for FlashNode */
+            --eagle-color: #a855f7; /* Violet/Purple for Alpha Testbed */
+            --bg-dark: #0f172a; /* Slate 900 */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+        }
 
-    header {
-      text-align: center;
-      margin-top: 25px;
-    }
+        .console-card {
+            background-color: #1e293b; /* Slate 800 */
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.4); /* FlashNode Cyan Glow */
+            border: 2px solid var(--flashnode-color);
+        }
 
-    header h2 {
-      font-size: 2.3em;
-      color: #00ffcc;
-      text-shadow: 0 0 25px #00ffff;
-      margin: 0;
-    }
+        .scan-button {
+            background-color: var(--flashnode-color);
+            transition: all 0.3s ease;
+            color: #fff; 
+            font-weight: 700;
+        }
+        .scan-button:hover:not(:disabled) {
+            background-color: #0891b2; /* Deeper cyan */
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.8);
+        }
+        
+        #reportOutput {
+            font-family: 'Space Mono', monospace;
+            border: 1px solid #334155;
+            background-color: #020617; /* Black for contrast */
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
 
-    header p {
-      margin: 10px 0;
-      color: #ffcc00;
-      font-weight: bold;
-      text-shadow: 0 0 10px #ffcc00;
-    }
+        .report-header {
+            background-color: var(--flashnode-color);
+            color: #fff;
+        }
+        
+        #scanLog {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse;
+        }
 
-    .donation {
-      margin-top: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(0, 255, 204, 0.2);
-      border-radius: 20px;
-      padding: 20px;
-      width: 320px;
-      text-align: center;
-      box-shadow: 0 0 25px rgba(0, 255, 204, 0.2);
-      transition: 0.3s;
-    }
-
-    .donation:hover {
-      transform: scale(1.03);
-      box-shadow: 0 0 40px rgba(0, 255, 204, 0.3);
-    }
-
-    .donation img {
-      width: 100%;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      border: 2px solid #00ffcc;
-    }
-
-    .donation h3 {
-      margin: 0;
-      font-size: 1.2em;
-      color: #00ffcc;
-    }
-
-    .donation span {
-      color: #ffcc00;
-      font-weight: bold;
-      font-size: 1.1em;
-    }
-
-    .container {
-      margin-top: 30px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 25px;
-      width: 90%;
-      max-width: 700px;
-      box-shadow: 0 0 30px rgba(0, 255, 204, 0.15);
-    }
-
-    select, input, button {
-      width: 100%;
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-size: 1em;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    select:focus, input:focus {
-      outline: 2px solid #00ffcc;
-      box-shadow: 0 0 10px #00ffcc;
-    }
-
-    button {
-      background: linear-gradient(90deg, #00ffcc, #0077ff);
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-      margin-top: 20px;
-    }
-
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #00ffcc;
-    }
-
-    #output {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      font-size: 1em;
-      white-space: pre-wrap;
-      border-left: 4px solid #00ffcc;
-    }
-
-    .copy-btn {
-      margin-top: 10px;
-      background: #111;
-      color: #00ffcc;
-      border: 1px solid #00ffcc;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .copy-btn:hover {
-      background: #00ffcc;
-      color: #000;
-    }
-
-    footer {
-      margin-top: auto;
-      text-align: center;
-      padding: 20px;
-      color: #00ffcc;
-      text-shadow: 0 0 15px #0077ff;
-      font-size: 1.1em;
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      backdrop-filter: blur(8px);
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      animation: fadeIn 0.4s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal-content {
-      background: #111;
-      padding: 25px;
-      border-radius: 12px;
-      border: 1px solid #00ffcc;
-      text-align: left;
-      width: 90%;
-      max-width: 600px;
-      max-height: 80vh;
-      overflow-y: auto;
-      color: #ddd;
-    }
-
-    .modal-content h2, .modal-content h3 {
-      color: #00ffcc;
-      text-align: center;
-    }
-
-    .agree-btn {
-      display: block;
-      margin: 20px auto 0;
-      background: linear-gradient(90deg, #00ffcc, #0077ff);
-      border: none;
-      color: white;
-      font-weight: bold;
-      padding: 10px 25px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .agree-btn:disabled {
-      background: #333;
-      color: #777;
-      cursor: not-allowed;
-    }
-
-    .agree-btn:hover:enabled {
-      transform: scale(1.05);
-    }
-  </style>
+        .loading-dot {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* New Styles for Threat Matrix */
+        #threatMatrixCanvas {
+            background-color: rgba(6, 182, 212, 0.05);
+            border: 1px solid var(--flashnode-color);
+            border-radius: 8px;
+            margin: auto;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body > *:not(#reportOutput) { display: none; }
+            #reportOutput {
+                display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important;
+                box-shadow: none !important; border: none !important; background-color: white !important; color: black !important; min-height: 100vh;
+            }
+            #reportOutput * { color: black !important; box-shadow: none !important; background-color: transparent !important; }
+            .text-white, .text-gray-300, .text-gray-400 { color: black !important; }
+            .text-red-400 { color: red !important; }
+            .text-green-400 { color: green !important; }
+            .text-cyan-400 { color: teal !important; }
+            .report-header { background-color: #aaa !important; color: white !important; }
+            #downloadButton, #jsonButton, #rulesSection, #threatMatrixContainer { display: none; }
+        }
+    </style>
 </head>
-<body>
+<body class="text-white min-h-screen flex items-start justify-center p-4">
 
-  <header>
-    <h2>🔥 Owned by SK. Mohsin Pasha 🔥</h2>
-    <p>Made by Dark PV LTD</p>
-  </header>
+    <div class="w-full max-w-5xl mt-6 p-6 md:p-10 rounded-2xl console-card">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-2 text-cyan-400 font-mono tracking-widest">
+            EAGLE EYE MONITOR <span class="text-xl">v0.2</span>
+        </h1>
+        <p class="text-gray-400 text-center mb-8 text-sm md:text-base">
+            // FLASHNODE INTEGRATION: 5-Vector Real-Time Risk Model
+        </p>
 
-  <div class="donation">
-    <img src="qr.jpg" alt="UPI QR Code">
-    <h3>💰 Donate (India Only)</h3>
-    <p>UPI ID: <span>skmohsinpasha@fam</span></p>
-  </div>
+        <!-- LIVE SCAN LOG FEATURE -->
+        <div class="mb-6 p-4 rounded-xl">
+            <h3 class="text-sm font-bold text-cyan-400 mb-2">// LIVE PROTOCOL LOG</h3>
+            <div id="scanLog" class="p-3 rounded-lg">
+                <p class="text-xs font-mono text-gray-400">[--:--:--] System Initialized. FlashNode Integration Complete...</p>
+            </div>
+        </div>
 
-  <h1 style="margin-top:30px; color:#00b7ff; text-shadow:0 0 15px #00b7ff;">⚡ AI Prompt Wizard Pro</h1>
+        <!-- INPUTS & CONTROLS -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <!-- P01: ID/EMAIL AUDIT -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+                <label for="emailInput" class="block text-xs font-semibold mb-1 text-purple-400">// P01: ID FUZZY SWEEP</label>
+                <input type="text" id="emailInput" placeholder="Email/User"
+                        class="w-full px-2 py-1 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 font-mono text-sm" />
+                <button id="scanEmailButton" onclick="scanEmail()"
+                        class="scan-button w-full text-white font-bold py-1 mt-2 rounded-lg text-xs transition duration-150">AUDIT</button>
+            </div>
 
-  <div class="container">
-    <label>Choose AI Model:</label>
-    <select id="model">
-      <option>Gemini</option>
-      <option>ChatGPT (DALL·E)</option>
-      <option>Midjourney</option>
-      <option>Leonardo</option>
-      <option>Stable Diffusion</option>
-    </select>
+            <!-- P02: PASSWORD AUDIT (Entropy) -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+                <label for="passwordInput" class="block text-xs font-semibold mb-1 text-purple-400">// P02: ENTROPY CALC.</label>
+                <input type="password" id="passwordInput" placeholder="Password"
+                        class="w-full px-2 py-1 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 font-mono text-sm" />
+                <button id="scanPasswordButton" onclick="scanPassword()"
+                        class="scan-button w-full text-white font-bold py-1 mt-2 rounded-lg text-xs transition duration-150">AUDIT</button>
+            </div>
+            
+            <!-- P03: IP RISK ASSESSMENT (ASN/Geo-Anomaly) -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+                <label for="ipInput" class="block text-xs font-semibold mb-1 text-purple-400">// P03: ASN/GEO-ANOMALY</label>
+                <input type="text" id="ipInput" placeholder="IP (e.g., 5.188.210.15)"
+                        class="w-full px-2 py-1 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 font-mono text-sm" />
+                <button id="scanIpButton" onclick="scanIP()"
+                        class="scan-button w-full text-white font-bold py-1 mt-2 rounded-lg text-xs transition duration-150">AUDIT</button>
+            </div>
 
-    <label>Style:</label>
-    <select id="style">
-      <option>Anime</option>
-      <option>Realistic</option>
-      <option>Digital Art</option>
-      <option>Cyberpunk</option>
-      <option>Fantasy</option>
-      <option>Cartoon</option>
-      <option>Cinematic</option>
-    </select>
+            <!-- P04: URL INTEGRITY SCAN (TLS/Maturity) -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+                <label for="urlInput" class="block text-xs font-semibold mb-1 text-purple-400">// P04: TLS/MATURITY</label>
+                <input type="text" id="urlInput" placeholder="URL (e.g., malicious.xyz)"
+                        class="w-full px-2 py-1 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 font-mono text-sm" />
+                <button id="scanUrlButton" onclick="scanURL()"
+                        class="scan-button w-full text-white font-bold py-1 mt-2 rounded-lg text-xs transition duration-150">AUDIT</button>
+            </div>
+            
+            <!-- P05: FLASHNODE QUANTUM ANOMALY (NEW) -->
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+                <label for="processInput" class="block text-xs font-semibold mb-1 text-flashnode-color">// P05: FLASHNODE QUANTUM</label>
+                <input type="text" id="processInput" placeholder="Process/Txn ID (e.g., T_3490_HIGH)"
+                        class="w-full px-2 py-1 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono text-sm" />
+                <button id="scanProcessButton" onclick="scanProcess()"
+                        class="scan-button w-full text-white font-bold py-1 mt-2 rounded-lg text-xs transition duration-150">AUDIT</button>
+            </div>
+        </div>
 
-    <label>Subject (what to generate):</label>
-    <input id="subject" placeholder="e.g. futuristic samurai in neon city">
+        <!-- REPORT OUTPUT AREA (PDF Style) -->
+        <div id="reportOutput" class="p-6 md:p-10 rounded-xl transition-all duration-500">
+            <div class="report-header p-4 mb-6 rounded-t-lg flex flex-col md:flex-row justify-between items-center">
+                <h2 class="text-2xl font-bold font-mono">THREAT INTELLIGENCE REPORT <span class="text-sm opacity-80">(v0.2)</span></h2>
+                <p class="text-sm font-mono opacity-80 mt-2 md:mt-0" id="reportTimestamp">GENERATED: AWAITING PROTOCOL LAUNCH</p>
+            </div>
+            
+            <!-- 5D THREAT MATRIX -->
+            <div id="threatMatrixContainer" class="mb-8 p-4 bg-slate-800 rounded-xl">
+                <h3 class="text-xl font-bold text-gray-300 border-b border-gray-700 pb-2 mb-4">5-VECTOR AGGREGATION & THREAT MATRIX</h3>
+                <canvas id="threatMatrixCanvas" width="400" height="400" class="mx-auto"></canvas>
+                <div class="text-center mt-2 text-sm text-gray-400">
+                    <span class="text-red-400">// CRIT</span> | <span class="text-yellow-400">// MODERATE</span> | <span class="text-green-400">// NOMINAL</span>
+                </div>
+            </div>
 
-    <label>Emotion / Mood:</label>
-    <input id="emotion" placeholder="e.g. mysterious, powerful">
+            <!-- Protocol 01 Report -->
+            <div id="emailReport" class="mb-8">
+                <h3 class="text-xl font-bold text-gray-300 border-b border-gray-700 pb-2 mb-4">I. IDENTIFIER FUZZY MATCH (P01)</h3>
+                <div id="emailStatus" class="p-3 text-white font-mono rounded-lg mb-4">Awaiting Scan...</div>
+                <div id="emailBreachDetails" class="text-gray-500 p-2 text-sm">Run Protocol 01 to generate audit data.</div>
+            </div>
 
-    <label>Lighting & Camera details:</label>
-    <input id="lighting" placeholder="e.g. dramatic lighting, 4K UHD, close-up">
+            <!-- Protocol 02 Report -->
+            <div id="passwordReport" class="mb-8">
+                <h3 class="text-xl font-bold text-gray-300 border-b border-gray-700 pb-2 mb-4">II. ENTROPY & HASH EXPOSURE (P02)</h3>
+                <div id="passwordStatus" class="p-3 text-white font-mono rounded-lg mb-4">Awaiting Scan...</div>
+                <div id="passwordDetails" class="text-gray-500 p-2 text-sm">Run Protocol 02 to generate audit data.</div>
+            </div>
+            
+            <!-- Protocol 03 Report -->
+            <div id="ipReport" class="mb-8">
+                <h3 class="text-xl font-bold text-gray-300 border-b border-gray-700 pb-2 mb-4">III. ASN REPUTATION & GEO-ANOMALY (P03)</h3>
+                <div id="ipStatus" class="p-3 text-white font-mono rounded-lg mb-4">Awaiting Scan...</div>
+                <div id="ipDetails" class="text-gray-500 p-2 text-sm">Run Protocol 03 to generate audit data.</div>
+            </div>
 
-    <button id="generate">🎨 Generate Prompt</button>
+             <!-- Protocol 04 Report -->
+            <div id="urlReport" class="mb-8">
+                <h3 class="text-xl font-bold text-gray-300 border-b border-gray-700 pb-2 mb-4">IV. TLS CHAIN & DOMAIN MATURITY (P04)</h3>
+                <div id="urlStatus" class="p-3 text-white font-mono rounded-lg mb-4">Awaiting Scan...</div>
+                <div id="urlDetails" class="text-gray-500 p-2 text-sm">Run Protocol 04 to generate audit data.</div>
+            </div>
+            
+            <!-- Protocol 05 Report (NEW) -->
+            <div id="processReport" class="mb-8">
+                <h3 class="text-xl font-bold text-gray-300 border-b border-gray-700 pb-2 mb-4">V. FLASHNODE QUANTUM ANOMALY DETECTION (P05)</h3>
+                <div id="processStatus" class="p-3 text-white font-mono rounded-lg mb-4">Awaiting Scan...</div>
+                <div id="processDetails" class="text-gray-500 p-2 text-sm">Run Protocol 05 to generate audit data.</div>
+            </div>
 
-    <div id="output"></div>
-    <button class="copy-btn" id="copy">📋 Copy Prompt</button>
-  </div>
 
-  <!-- Modal -->
-  <div class="modal" id="policyModal">
-    <div class="modal-content" id="policyContent">
-      <h2>🧾 Dark PV LTD - Terms, Rules & Policies</h2>
-      <p><b>Last Updated:</b> October 2025</p>
+            <!-- ACTION SECTION with Dynamic Risk Meter -->
+            <div id="actionSection" class="mt-8 pt-4 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center hidden">
+                <div id="overallStatus" class="flex-grow w-full md:w-auto mb-4 md:mb-0">
+                    <p class="text-lg font-bold font-mono" id="overallStatusText">AWAITING ALL PROTOCOLS...</p>
+                    <div class="mt-2">
+                        <p class="text-sm font-semibold text-gray-400">Aggregated Risk Score (0-100): <span id="riskScoreValue" class="text-cyan-400 font-bold">--</span></p>
+                        <div id="riskMeter" class="w-full h-3 rounded-full bg-slate-700 overflow-hidden mt-1">
+                            <div id="riskBar" class="h-full transition-all duration-500" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex space-x-4">
+                    <button id="jsonButton" onclick="exportJSON()"
+                            class="px-4 py-2 bg-slate-600 text-white font-bold rounded-lg hover:bg-slate-700 transition duration-150 text-sm">
+                        EXPORT JSON API
+                    </button>
+                    <button id="downloadButton" onclick="downloadReport()" 
+                            class="px-4 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-150 text-sm">
+                        DOWNLOAD PDF REPORT
+                    </button>
+                </div>
+            </div>
 
-      <h3>1. Company Policy</h3>
-      <p>
-        Dark PV LTD operates as a private creative technology organization, developing AI-based applications for entertainment, design, and innovation.
-        All products and tools under Dark PV LTD, including “AI Prompt Wizard Pro,” are subject to intellectual property rights.
-      </p>
-
-      <h3>2. User Rules</h3>
-      <ul>
-        <li>Do not use AI to create or promote illegal, explicit, violent, or hateful content.</li>
-        <li>Respect copyrights — prompts must not include protected characters, brands, or trademarks.</li>
-        <li>Generated content must not be used for political manipulation or misinformation.</li>
-        <li>By using this tool, users agree to comply with national and international AI usage ethics.</li>
-      </ul>
-
-      <h3>3. Data Privacy</h3>
-      <p>
-        This site does not collect personal data. Inputs are processed locally for generating prompts.
-        Donation data via UPI is handled securely by verified Indian payment systems.
-      </p>
-
-      <h3>4. Ownership & Legal Rights</h3>
-      <p>
-        All source code, brand name, and UI design belong exclusively to Dark PV LTD.
-        Unauthorized distribution or modification without permission is prohibited.
-      </p>
-
-      <h3>5. Contact</h3>
-      <p>
-        For partnership or licensing:<br>
-        📧 darkpvltd@official.com (example placeholder)
-      </p>
-
-      <button class="agree-btn" id="agreeBtn" disabled>I Understand & Agree</button>
+            <!-- RULES/DISCLAIMER SECTION (Bottom) -->
+            <div id="rulesSection" class="mt-10 p-4 border border-slate-700 rounded-lg text-sm text-gray-400">
+                <h4 class="font-bold text-cyan-400 mb-2">NPB COMPLIANCE & PROTOCOL RULES (EAGLE EYE v0.2 FLASHNODE)</h4>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>*Rule 01 (Asset Status):* This system operates as a high-fidelity *simulator* for risk modeling and demonstration only.</li>
+                    <li>*Rule 02 (Data Privacy):* Input data is processed client-side. Passwords are sent as SHA-1 hashes (k-anonymity protocol simulated). No data is stored.</li>
+                    <li>*Rule 03 (5-Vector Audit):* The risk score is an aggregate of *Fuzzy Match (P01), Entropy (P02), Geo-Threat (P03), Maturity/TLS (P04), and Quantum Anomaly (P05)*.</li>
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <footer>© 2025 Dark PV LTD | All Rights Reserved 🔰</footer>
+    <script>
+        // --- DATA MOCKUP (International Dark Web & OSINT) ---
+        const mockBreaches = [
+            // Added fuzzy match score influence and metadata
+            { id: 1, name: "Global Financial Leak v2.0", date: "2024-10-01", data: ["Emails", "Names", "Locations"], source: "Dark Web Archive", region: "GLOBAL", fuzzyInfluence: 0.9 },
+            { id: 2, name: "EuroCom Gaming Breach", date: "2023-05-15", data: ["Usernames", "Passwords (Hashed)", "IPs"], source: "OSINT Database", region: "EUROPE", fuzzyInfluence: 0.6 },
+            { id: 3, name: "Asian Market PII Dump", date: "2024-02-28", data: ["Emails", "Phone Numbers", "2FA Backups"], source: "Dark Web Archive", region: "ASIA-PAC", fuzzyInfluence: 0.8 },
+            { id: 4, name: "US Tech Forum Leak", date: "2022-04-10", data: ["Usernames", "Chat Logs"], source: "OSINT Database", region: "NORTH AMERICA", fuzzyInfluence: 0.4 }
+        ];
 
-  <script>
-    const modal = document.getElementById('policyModal');
-    const content = document.getElementById('policyContent');
-    const agreeBtn = document.getElementById('agreeBtn');
+        // --- GLOBAL STATE ---
+        let emailAuditComplete = false;
+        let passwordAuditComplete = false;
+        let ipAuditComplete = false;
+        let urlAuditComplete = false;
+        let processAuditComplete = false; // NEW P05 FLAG
+        
+        let finalReportData = {
+            vectorScores: {
+                compromise: 0, // P01: Fuzzy Match Score (0-100)
+                strength: 0,    // P02: Password Entropy Risk (0-100, lower entropy = higher score)
+                geoThreat: 0,  // P03: ASN/Geo-Anomaly Risk (0-100)
+                exposure: 0,    // P04: TLS/Maturity Risk (0-100)
+                anomaly: 0      // P05: Quantum Anomaly Risk (0-100) - NEW
+            },
+            emailDetails: {},
+            passwordDetails: {},
+            ipDetails: {},
+            urlDetails: {},
+            processDetails: {} // NEW
+        };
+        const AUDIT_DELAY = 1800; 
 
-    if (!localStorage.getItem('policyAccepted')) {
-      modal.style.display = 'flex';
-    }
+        // --- UTILITY FUNCTIONS ---
+        const logElement = document.getElementById('scanLog');
+        
+        function logMessage(message, colorClass = 'text-gray-300') {
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            const logEntry = document.createElement('p');
+            logEntry.className = `text-xs font-mono mb-1 ${colorClass}`;
+            logEntry.innerHTML = `[${time}] ${message}`;
+            logElement.prepend(logEntry);
+            // Limit log size
+            while (logElement.children.length > 10) {
+                logElement.removeChild(logElement.lastChild);
+            }
+        }
 
-    // Auto scroll effect
-    let scrollPos = 0;
-    const scrollInterval = setInterval(() => {
-      if (content.scrollTop < content.scrollHeight - content.clientHeight) {
-        content.scrollTop += 2;
-      } else {
-        clearInterval(scrollInterval);
-      }
-    }, 30);
+        function renderStatus(elementId, type) {
+            const element = document.getElementById(elementId);
+            element.classList.remove('bg-red-900/50', 'bg-green-900/50', 'bg-yellow-900/50', 'bg-slate-800');
 
-    // Enable button when user scrolls to bottom
-    content.addEventListener('scroll', () => {
-      if (content.scrollTop + content.clientHeight >= content.scrollHeight - 10) {
-        agreeBtn.disabled = false;
-      }
-    });
+            let borderStyle = `4px solid var(--flashnode-color)`;
+            let bgColorClass = 'bg-slate-800';
 
-    agreeBtn.onclick = () => {
-      localStorage.setItem('policyAccepted', 'true');
-      modal.style.display = 'none';
-    };
+            if (type === 'critical') {
+                bgColorClass = 'bg-red-900/50';
+                borderStyle = `4px solid var(--compromised-color)`;
+            } else if (type === 'moderate') {
+                bgColorClass = 'bg-yellow-900/50';
+                borderStyle = `4px solid var(--moderate-color)`;
+            } else if (type === 'nominal') {
+                bgColorClass = 'bg-green-900/50';
+                borderStyle = `4px solid var(--safe-color)`;
+            } 
+            
+            element.classList.add(bgColorClass);
+            element.style.borderLeft = borderStyle;
+        }
+        
+        // Simulates the SHA-1 Hashing required for k-anonymity (Rule 02)
+        async function sha1(str) {
+            const buffer = new TextEncoder("utf-8").encode(str);
+            const digest = await crypto.subtle.digest("SHA-1", buffer);
+            // Convert ArrayBuffer to hex string
+            return Array.prototype.map.call(new Uint8Array(digest), x => (('00' + x.toString(16)).slice(-2))).join('');
+        }
 
-    // Prompt generation logic
-    document.getElementById('generate').onclick = () => {
-      const model = document.getElementById('model').value;
-      const style = document.getElementById('style').value;
-      const subject = document.getElementById('subject').value;
-      const emotion = document.getElementById('emotion').value;
-      const lighting = document.getElementById('lighting').value;
+        // Entropy Calculation (Shannon Entropy) - Advanced P02
+        function calculateEntropy(password) {
+            const len = password.length;
+            if (len === 0) return 0;
+            
+            let charSetSize = 0;
+            if (/[a-z]/.test(password)) charSetSize += 26;
+            if (/[A-Z]/.test(password)) charSetSize += 26;
+            if (/[0-9]/.test(password)) charSetSize += 10;
+            if (/[^a-zA-Z0-9\s]/.test(password)) charSetSize += 32; 
+            
+            if (charSetSize === 0) return 0;
 
-      if (!subject.trim()) {
-        alert("Please enter a subject!");
-        return;
-      }
+            return (len * Math.log2(charSetSize)).toFixed(2);
+        }
 
-      const prompt = `(${model} Style) — A ${style} image of ${subject}, evoking ${emotion}, with ${lighting}. High detail, cinematic composition, ultra quality.`;
-      document.getElementById('output').textContent = prompt;
-    };
 
-    document.getElementById('copy').onclick = () => {
-      navigator.clipboard.writeText(document.getElementById('output').textContent);
-      const btn = document.getElementById('copy');
-      btn.textContent = "✅ Copied!";
-      setTimeout(() => btn.textContent = "📋 Copy Prompt", 2000);
-    };
-  </script>
+        function drawThreatMatrix(scores) {
+            const canvas = document.getElementById('threatMatrixCanvas');
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const center = size / 2;
+            const radius = size * 0.4;
+            // The radar chart only visually plots 4 axes for clarity, even though 5 vectors are calculated.
+            const vectors = [
+                { name: 'Fuzzy Match (P01)', score: scores.compromise, color: '#f87171', angle: 0 },
+                { name: 'Entropy Risk (P02)', score: scores.strength, color: '#facc15', angle: Math.PI / 2 },
+                { name: 'Maturity/TLS (P04)', score: scores.exposure, color: '#a855f7', angle: Math.PI },
+                { name: 'ASN/Geo-Threat (P03)', score: scores.geoThreat, color: '#3b82f6', angle: Math.PI * 3 / 2 }
+            ];
+
+            ctx.clearRect(0, 0, size, size);
+
+            // 1. Draw Axis Lines
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            vectors.forEach(v => {
+                ctx.moveTo(center, center);
+                ctx.lineTo(center + radius * Math.cos(v.angle), center + radius * Math.sin(v.angle));
+            });
+            ctx.stroke();
+            
+            // 2. Draw Vector Area (Inner Polygon)
+            ctx.beginPath();
+            vectors.forEach((v, i) => {
+                const normalizedScore = v.score / 100;
+                const x = center + radius * normalizedScore * Math.cos(v.angle);
+                const y = center + radius * normalizedScore * Math.sin(v.angle);
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.closePath();
+            
+            // Fill based on overall risk (using the calculated score from checkGlobalStatus)
+            const avgScore = (scores.compromise + scores.strength + scores.exposure + scores.geoThreat + scores.anomaly) / 5;
+            let fillAlpha = Math.min(0.5, avgScore / 100 * 0.8);
+            
+            if (avgScore < 25) { 
+                ctx.fillStyle = `rgba(16, 185, 129, ${fillAlpha})`;
+            } else if (avgScore < 55) { 
+                ctx.fillStyle = `rgba(251, 191, 36, ${fillAlpha})`;
+            } else { 
+                ctx.fillStyle = `rgba(239, 68, 68, ${fillAlpha})`;
+            }
+            ctx.fill();
+
+            // 3. Draw Axis Labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px Space Mono';
+            vectors.forEach(v => {
+                const angle = v.angle;
+                const x = center + (radius + 15) * Math.cos(angle);
+                const y = center + (radius + 15) * Math.sin(angle);
+                ctx.textAlign = (angle === 0) ? 'left' : (angle === Math.PI) ? 'right' : 'center';
+                ctx.textBaseline = (angle === Math.PI / 2) ? 'top' : (angle === Math.PI * 3 / 2) ? 'bottom' : 'middle';
+                ctx.fillText(v.name.toUpperCase(), x, y);
+            });
+            
+            // 4. Draw Center Dot
+            ctx.beginPath();
+            ctx.arc(center, center, 4, 0, 2 * Math.PI);
+            ctx.fillStyle = '#06b6d4'; // FlashNode Color
+            ctx.fill();
+        }
+
+        function updateRiskScore() {
+            const s = finalReportData.vectorScores;
+            
+            // Calculate Average Score (0-100) based on 5 vectors
+            let score = (s.compromise + s.strength + s.geoThreat + s.exposure + s.anomaly) / 5;
+            score = Math.min(100, Math.round(score)); 
+
+            const riskBar = document.getElementById('riskBar');
+            const riskValue = document.getElementById('riskScoreValue');
+            const overallStatusElement = document.getElementById('overallStatusText');
+
+            riskBar.style.width = `${score}%`;
+            riskValue.textContent = score;
+            
+            riskBar.classList.remove('bg-green-500', 'bg-yellow-500', 'bg-red-600');
+            overallStatusElement.classList.remove('text-red-400', 'text-green-400', 'text-yellow-400');
+
+            // Set visual colors
+            if (score < 25) {
+                riskBar.classList.add('bg-green-500');
+                overallStatusElement.textContent = `THREAT LEVEL: NOMINAL (${score} - A-Level Compliance)`;
+                overallStatusElement.classList.add('text-green-400');
+            } else if (score < 55) {
+                riskBar.classList.add('bg-yellow-500');
+                overallStatusElement.textContent = `THREAT LEVEL: MODERATE (${score} - Remediation Advisory)`;
+                overallStatusElement.classList.add('text-yellow-400');
+            } else {
+                riskBar.classList.add('bg-red-600');
+                overallStatusElement.textContent = `THREAT LEVEL: CRITICAL (${score} - Immediate Protocol Lockout)`;
+                overallStatusElement.classList.add('text-red-400');
+            }
+
+            // Show the action section only after at least one scan runs
+            if (emailAuditComplete || passwordAuditComplete || ipAuditComplete || urlAuditComplete || processAuditComplete) {
+                document.getElementById('actionSection').classList.remove('hidden');
+            }
+            // Redraw the matrix
+            drawThreatMatrix(finalReportData.vectorScores);
+        }
+
+        // Check if all primary scans are complete and update the global report
+        function checkGlobalStatus() {
+            if (emailAuditComplete && passwordAuditComplete && ipAuditComplete && urlAuditComplete && processAuditComplete) {
+                logMessage('SYSTEM AUDIT COMPLETE: 5-Vector FlashNode Analysis Ready.', 'text-cyan-400');
+            }
+            updateRiskScore();
+            document.getElementById('reportTimestamp').textContent = `GENERATED: ${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`;
+        }
+
+
+        // --- SCAN PROTOCOL IMPLEMENTATIONS ---
+
+        async function scanEmail() {
+            const inputElement = document.getElementById('emailInput');
+            const buttonElement = document.getElementById('scanEmailButton');
+            const email = inputElement.value.trim();
+
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                logMessage('P01 ERROR: Invalid email or user identifier.', 'text-red-400');
+                return;
+            }
+
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<span class="loading-dot">.</span> FUZZY MATCH <span class="loading-dot">.</span>';
+            logMessage(`P01 START: Initializing ID Fuzzy Match for ${email}...`);
+
+            setTimeout(() => {
+                const exactMatch = email.toLowerCase().includes('critical') || Math.random() < 0.1;
+                const partialMatch = email.toLowerCase().includes('leak') || Math.random() < 0.4;
+                
+                let fuzzyScore = 0;
+                let statusType = 'nominal';
+                let details = '';
+                let breach = null;
+
+                if (exactMatch) {
+                    fuzzyScore = 95;
+                    breach = mockBreaches[0]; 
+                    statusType = 'critical';
+                } else if (partialMatch) {
+                    breach = mockBreaches[Math.floor(Math.random() * (mockBreaches.length - 1)) + 1];
+                    fuzzyScore = Math.min(100, Math.round(breach.fuzzyInfluence * 100 + (Math.random() * 20)));
+                    statusType = fuzzyScore > 50 ? 'moderate' : 'nominal';
+                } else {
+                    fuzzyScore = Math.floor(Math.random() * 20);
+                }
+
+                finalReportData.emailDetails.email = email;
+                finalReportData.emailDetails.fuzzyScore = fuzzyScore;
+                finalReportData.vectorScores.compromise = fuzzyScore;
+                
+                if (fuzzyScore > 50) {
+                    document.getElementById('emailStatus').innerHTML = `<span class="${statusType === 'critical' ? 'text-red-400' : 'text-yellow-400'} font-bold">// ${statusType.toUpperCase()}: FUZZY SCORE ${fuzzyScore}</span>`;
+                    details = `
+                        <p class="text-white">STATUS: High-confidence metadata correlation detected.</p>
+                        <ul class="list-disc list-inside ml-4 mt-2 text-gray-300">
+                            <li>Breach Proximity: ${breach.name} (${breach.date})</li>
+                            <li>Data Exposed: ${breach.data.join(', ')}</li>
+                            <li>Vector Risk: ${breach.fuzzyInfluence * 100}% (Compromised Data Linkage)</li>
+                            <li>Mitigation: Change identifier/email immediately.</li>
+                        </ul>
+                    `;
+                    logMessage(`P01 RESULT: ${statusType.toUpperCase()} - Fuzzy score ${fuzzyScore} detected.`, statusType === 'critical' ? 'text-red-400' : 'text-yellow-400');
+                } else {
+                    document.getElementById('emailStatus').innerHTML = `<span class="text-green-400 font-bold">// NOMINAL: FUZZY SCORE ${fuzzyScore}</span>`;
+                    details = 'Audit complete. No high-confidence fuzzy matches found. Identity vector is low-risk.';
+                    logMessage('P01 RESULT: NOMINAL - ID passed integrity check.', 'text-green-400');
+                }
+
+                renderStatus('emailStatus', statusType);
+                document.getElementById('emailBreachDetails').innerHTML = details;
+                emailAuditComplete = true;
+                buttonElement.innerHTML = 'AUDIT';
+                buttonElement.disabled = false;
+                checkGlobalStatus();
+            }, AUDIT_DELAY);
+        }
+
+        async function scanPassword() {
+            const inputElement = document.getElementById('passwordInput');
+            const buttonElement = document.getElementById('scanPasswordButton');
+            const password = inputElement.value;
+
+            if (password.length < 1) {
+                logMessage('P02 ERROR: Password field is empty.', 'text-red-400');
+                return;
+            }
+
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<span class="loading-dot">.</span> ENTROPY <span class="loading-dot">.</span>';
+            logMessage('P02 START: Calculating Shannon Entropy and k-anonymity hash...', 'text-cyan-400');
+            
+            const hash = await sha1(password); 
+            const entropy = parseFloat(calculateEntropy(password));
+            
+            setTimeout(() => {
+                let exposureCount = 0;
+                let statusType = 'nominal';
+                let details = '';
+
+                if (password.toLowerCase().includes('password') || password.length < 8) {
+                    exposureCount = Math.floor(Math.random() * 500000) + 500000;
+                } else if (entropy < 60) {
+                    exposureCount = Math.floor(Math.random() * 100) + 10;
+                }
+
+                const targetEntropy = 100; 
+                let entropyRisk = 100 - Math.min(100, entropy / targetEntropy * 100);
+                
+                if (exposureCount > 1000) {
+                    entropyRisk = Math.min(95, entropyRisk + 30); 
+                    statusType = 'critical';
+                } else if (entropy < 60) {
+                    statusType = 'moderate';
+                }
+
+                finalReportData.vectorScores.strength = Math.min(100, Math.round(entropyRisk));
+                
+                if (exposureCount > 0) {
+                    details += `<p class="text-red-400">STATUS: CRITICAL EXPOSURE. Found in ${exposureCount.toLocaleString()} known breaches.</p>`;
+                    document.getElementById('passwordStatus').innerHTML = `<span class="text-red-400 font-bold">// CRITICAL: EXPOSURE ${exposureCount.toLocaleString()} HITS</span>`;
+                } else {
+                    details += `<p class="text-green-400">STATUS: CLEAN HASH. No matches found in pwned password archives.</p>`;
+                    document.getElementById('passwordStatus').innerHTML = `<span class="text-white font-bold">// ${statusType.toUpperCase()}: ENTROPY ${entropy} bits</span>`;
+                }
+                
+                details += `
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300">
+                        <li>Calculated Entropy: ${entropy} bits (Target > 80 bits)</li>
+                        <li>Character Count: ${password.length} (Target > 12)</li>
+                        <li>Vector Risk Score: ${finalReportData.vectorScores.strength}</li>
+                        ${exposureCount > 0 ? `<li>Mitigation: Immediate password replacement is MANDATORY.</li>` : ''}
+                    </ul>
+                `;
+                
+                finalReportData.passwordDetails.hashPrefix = hash.substring(0, 5);
+                finalReportData.passwordDetails.exposureCount = exposureCount;
+                finalReportData.passwordDetails.entropy = entropy;
+                
+                renderStatus('passwordStatus', exposureCount > 0 ? 'critical' : statusType);
+                document.getElementById('passwordDetails').innerHTML = details;
+                logMessage('P02 RESULT: Entropy calculation complete. Vector Risk: ' + finalReportData.vectorScores.strength, statusType === 'critical' ? 'text-red-400' : 'text-cyan-400');
+
+
+                passwordAuditComplete = true;
+                inputElement.value = ''; 
+                buttonElement.innerHTML = 'AUDIT';
+                buttonElement.disabled = false;
+                checkGlobalStatus();
+            }, AUDIT_DELAY);
+        }
+
+        function scanIP() {
+            const inputElement = document.getElementById('ipInput');
+            const buttonElement = document.getElementById('scanIpButton');
+            const ip = inputElement.value.trim();
+
+            const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+            if (!ipRegex.test(ip)) {
+                logMessage('P03 ERROR: Invalid IP address format.', 'text-red-400');
+                return;
+            }
+
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<span class="loading-dot">.</span> ASN AUDIT <span class="loading-dot">.</span>';
+            logMessage(`P03 START: ASN Reputation and Geo-Anomaly analysis for ${ip}...`);
+
+            setTimeout(() => {
+                let asnRisk = 0; 
+                let geoAnomaly = 0; 
+                let riskScore = 0;
+                let statusType = 'nominal';
+                let details = '';
+
+                if (ip.startsWith('5.188') || ip.startsWith('103.20') || Math.random() < 0.2) {
+                    asnRisk = Math.floor(Math.random() * 30) + 70; 
+                } else {
+                    asnRisk = Math.floor(Math.random() * 15); 
+                }
+
+                if (ip.startsWith('192.168') || ip.startsWith('10.') || ip.startsWith('172.16')) {
+                    geoAnomaly = 10;
+                } else if (Math.random() < 0.3) {
+                    geoAnomaly = Math.floor(Math.random() * 40) + 20; 
+                } else {
+                    geoAnomaly = Math.floor(Math.random() * 15); 
+                }
+                
+                riskScore = Math.round((asnRisk * 0.6) + (geoAnomaly * 0.4));
+                
+                if (riskScore > 70) {
+                    statusType = 'critical';
+                    document.getElementById('ipStatus').innerHTML = `<span class="text-red-400 font-bold">// CRITICAL: ASN ${asnRisk} / ANOMALY ${geoAnomaly}</span>`;
+                } else if (riskScore > 40) {
+                    statusType = 'moderate';
+                    document.getElementById('ipStatus').innerHTML = `<span class="text-yellow-400 font-bold">// MODERATE: ASN ${asnRisk} / ANOMALY ${geoAnomaly}</span>`;
+                } else {
+                    document.getElementById('ipStatus').innerHTML = `<span class="text-green-400 font-bold">// NOMINAL: ASN ${asnRisk} / ANOMALY ${geoAnomaly}</span>`;
+                }
+                
+                details = `
+                    <p class="text-white">STATUS: Multi-factor risk analysis complete.</p>
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300">
+                        <li>ASN Reputation Score: ${asnRisk} (High = Blacklisted Network)</li>
+                        <li>Geo-Anomaly Index: ${geoAnomaly} (High = Unexpected/Distant Location)</li>
+                        <li>Vector Risk Score: ${riskScore}</li>
+                    </ul>
+                `;
+                
+                finalReportData.vectorScores.geoThreat = riskScore;
+                finalReportData.ipDetails.ip = ip;
+                finalReportData.ipDetails.riskScore = riskScore;
+                
+                renderStatus('ipStatus', statusType);
+                document.getElementById('ipDetails').innerHTML = details;
+
+                logMessage(`P03 RESULT: ${statusType.toUpperCase()} - Combined Risk: ${riskScore}`, statusType === 'critical' ? 'text-red-400' : 'text-cyan-400');
+
+                ipAuditComplete = true;
+                buttonElement.innerHTML = 'AUDIT';
+                buttonElement.disabled = false;
+                checkGlobalStatus();
+            }, AUDIT_DELAY);
+        }
+
+        function scanURL() {
+            const inputElement = document.getElementById('urlInput');
+            const buttonElement = document.getElementById('scanUrlButton');
+            const url = inputElement.value.trim();
+
+            if (!url.includes('.') || url.length < 5) {
+                logMessage('P04 ERROR: Invalid URL or domain format.', 'text-red-400');
+                return;
+            }
+
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<span class="loading-dot">.</span> TLS CHECK <span class="loading-dot">.</span>';
+            logMessage(`P04 START: TLS Chain and Domain Maturity sweep for ${url}...`);
+
+            setTimeout(() => {
+                let tlsRisk = 0; 
+                let maturityRisk = 0; 
+                let riskScore = 0;
+                let statusType = 'nominal';
+                let details = '';
+                
+                // --- 1. TLS Risk Simulation ---
+                if (url.includes('http://') || url.includes('expired') || url.endsWith('.xyz') || Math.random() < 0.2) {
+                    tlsRisk = Math.floor(Math.random() * 40) + 60; 
+                } else {
+                    tlsRisk = Math.floor(Math.random() * 15); 
+                }
+                
+                // --- 2. Maturity Risk Simulation ---
+                const domainAgeYears = Math.random() * 5; 
+                if (domainAgeYears < 0.5 || url.includes('phish')) {
+                    maturityRisk = Math.floor(Math.random() * 40) + 40; 
+                } else {
+                    maturityRisk = Math.floor(Math.random() * 20); 
+                }
+
+                riskScore = Math.round((tlsRisk * 0.7) + (maturityRisk * 0.3));
+
+                if (riskScore > 70) {
+                    statusType = 'critical';
+                    document.getElementById('urlStatus').innerHTML = `<span class="text-red-400 font-bold">// CRITICAL: TLS ${tlsRisk} / MATURITY ${maturityRisk}</span>`;
+                } else if (riskScore > 40) {
+                    statusType = 'moderate';
+                    document.getElementById('urlStatus').innerHTML = `<span class="text-yellow-400 font-bold">// MODERATE: TLS ${tlsRisk} / MATURITY ${maturityRisk}</span>`;
+                } else {
+                    document.getElementById('urlStatus').innerHTML = `<span class="text-green-400 font-bold">// NOMINAL: TLS ${tlsRisk} / MATURITY ${maturityRisk}</span>`;
+                }
+                
+                details = `
+                    <p class="text-white">STATUS: Domain exposure and cryptographic integrity analysis complete.</p>
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300">
+                        <li>TLS Chain Validation: ${tlsRisk > 50 ? 'FAILED/ABSENT' : 'VALID'} (Risk Score: ${tlsRisk})</li>
+                        <li>Domain Maturity (Simulated Age): ${domainAgeYears.toFixed(1)} years (Risk Score: ${maturityRisk})</li>
+                        <li>Vector Risk Score: ${riskScore}</li>
+                    </ul>
+                `;
+
+
+                finalReportData.vectorScores.exposure = riskScore;
+                finalReportData.urlDetails.url = url;
+                finalReportData.urlDetails.riskScore = riskScore;
+                
+                renderStatus('urlStatus', statusType);
+                document.getElementById('urlDetails').innerHTML = details;
+
+                logMessage(`P04 RESULT: ${statusType.toUpperCase()} - Combined Risk: ${riskScore}`, statusType === 'critical' ? 'text-red-400' : 'text-cyan-400');
+
+
+                urlAuditComplete = true;
+                buttonElement.innerHTML = 'AUDIT';
+                buttonElement.disabled = false;
+                checkGlobalStatus();
+            }, AUDIT_DELAY);
+        }
+
+        // --- NEW PROTOCOL P05: FLASHNODE QUANTUM ANOMALY DETECTION ---
+        function scanProcess() {
+            const inputElement = document.getElementById('processInput');
+            const buttonElement = document.getElementById('scanProcessButton');
+            const processId = inputElement.value.trim();
+
+            if (processId.length < 4) {
+                logMessage('P05 ERROR: Invalid Process/Txn ID. Must be at least 4 characters.', 'text-red-400');
+                return;
+            }
+
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<span class="loading-dot">.</span> Q-JITTER <span class="loading-dot">.</span>';
+            logMessage(`P05 START: FlashNode Quantum Anomaly Detection for ID ${processId}...`, 'text-cyan-400');
+
+            setTimeout(() => {
+                let behaviorScore = 0; // High for high privilege, massive data
+                let quantumJitter = 0; // High for simulated quantum decoherence/noise
+                let riskScore = 0;
+                let statusType = 'nominal';
+                let details = '';
+
+                // --- 1. Behavioral Scoring ---
+                if (processId.toUpperCase().includes('HIGH') || processId.toUpperCase().includes('ADMIN') || Math.random() < 0.2) {
+                    behaviorScore = Math.floor(Math.random() * 30) + 60; // 60-90 (Suspicious Activity Profile)
+                } else {
+                    behaviorScore = Math.floor(Math.random() * 20); // 0-20 (Normal Activity)
+                }
+
+                // --- 2. Quantum Jitter ---
+                if (processId.toUpperCase().includes('CRIT') || Math.random() < 0.1) {
+                    quantumJitter = Math.floor(Math.random() * 40) + 50; // 50-90 (High Jitter/Decoherence)
+                } else {
+                    quantumJitter = Math.floor(Math.random() * 25); // 0-25 (Normal Quantum Integrity)
+                }
+
+                // Combined Risk: 50% Behavior + 50% Jitter
+                riskScore = Math.round((behaviorScore * 0.5) + (quantumJitter * 0.5));
+
+                if (riskScore > 75) {
+                    statusType = 'critical';
+                    document.getElementById('processStatus').innerHTML = `<span class="text-red-400 font-bold">// CRITICAL: BEHAVIOR ${behaviorScore} / JITTER ${quantumJitter}</span>`;
+                } else if (riskScore > 40) {
+                    statusType = 'moderate';
+                    document.getElementById('processStatus').innerHTML = `<span class="text-yellow-400 font-bold">// MODERATE: BEHAVIOR ${behaviorScore} / JITTER ${quantumJitter}</span>`;
+                } else {
+                    document.getElementById('processStatus').innerHTML = `<span class="text-green-400 font-bold">// NOMINAL: BEHAVIOR ${behaviorScore} / JITTER ${quantumJitter}</span>`;
+                }
+                
+                // Report Details
+                details = `
+                    <p class="text-white">STATUS: Real-time behavioral and quantum integrity check complete (FlashNode System).</p>
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300">
+                        <li>Behavioral Anomaly Score: ${behaviorScore} (Measures privilege and volume anomaly)</li>
+                        <li>Quantum Jitter Index: ${quantumJitter} (Simulated measure of encryption decoherence)</li>
+                        <li>Vector Risk Score: ${riskScore}</li>
+                    </ul>
+                `;
+
+                finalReportData.vectorScores.anomaly = riskScore;
+                finalReportData.processDetails.processId = processId;
+                finalReportData.processDetails.riskScore = riskScore;
+                
+                renderStatus('processStatus', statusType);
+                document.getElementById('processDetails').innerHTML = details;
+
+                logMessage(`P05 RESULT: ${statusType.toUpperCase()} - FlashNode Risk: ${riskScore}`, statusType === 'critical' ? 'text-red-400' : 'text-cyan-400');
+
+
+                processAuditComplete = true;
+                buttonElement.innerHTML = 'AUDIT';
+                buttonElement.disabled = false;
+                checkGlobalStatus();
+            }, AUDIT_DELAY);
+        }
+        
+        // --- EXPORT FUNCTIONS (UNMODIFIED) ---
+
+        function exportJSON() {
+            const dataStr = JSON.stringify(finalReportData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `EAGLE_EYE_REPORT_v0.2_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            logMessage('JSON EXPORT: Protocol data packaged and delivered.', 'text-cyan-400');
+        }
+
+        function downloadReport() {
+            window.print();
+            logMessage('REPORT GENERATION: PDF spool initiated via print media query.', 'text-green-400');
+        }
+        
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            drawThreatMatrix(finalReportData.vectorScores);
+        }
+    </script>
 </body>
 </html>
