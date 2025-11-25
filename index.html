@@ -1,503 +1,405 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>AI Clipper — Smart Highlights (Engagement Detection)</title>
-<style>
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:Inter,system-ui,Arial,sans-serif;
-    background:linear-gradient(180deg,#070712,#020205);
-    color:#e6feff;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow:hidden;
-  }
-
-  /* Upload / Controls screen */
-  .overlay {
-    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:20;
-  }
-  .panel{
-    width:320px;background:rgba(255,255,255,0.03);border:1px solid rgba(0,255,255,0.12);
-    padding:18px;border-radius:12px;backdrop-filter:blur(6px);text-align:center;
-  }
-  .panel h1{margin:0 0 8px;font-size:20px;color:#bffcff}
-  .panel p{margin:0 0 12px;color:#95f2ef;font-size:13px}
-  label.input{
-    display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;
-  }
-  input[type=number]{
-    width:120px;padding:8px;border-radius:8px;border:1px solid rgba(0,255,255,0.12);
-    background:#000;color:#bffcff;font-weight:600;text-align:center;
-  }
-  .btn{
-    display:inline-block;padding:10px 14px;border-radius:10px;border:1px solid #00e6e6;
-    background:#071017;color:#001d1f;font-weight:700;cursor:pointer;
-  }
-  .btn:hover{filter:brightness(1.05)}
-
-  .status{
-    margin-top:12px;font-size:13px;color:#9ff0ec;height:20px;
-  }
-
-  /* Feed */
-  .feed{
-    position:relative;height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;
-    -webkit-overflow-scrolling:touch;
-  }
-  .clip{
-    scroll-snap-align:start;height:100vh;position:relative;display:flex;align-items:center;justify-content:center;background:#000;
-  }
-  video{
-    max-height:100%;height:100%;width:auto;object-fit:cover;background:#000;
-  }
-
-  /* Floating controls */
-  .controls {
-    position:absolute;right:18px;bottom:72px;display:flex;flex-direction:column;gap:10px;
-  }
-  .control{
-    width:120px;height:44px;border-radius:10px;background:rgba(255,255,255,0.04);
-    border:1px solid rgba(0,255,255,0.12);display:flex;align-items:center;justify-content:center;
-    font-weight:700;color:#c9fffb;cursor:pointer;backdrop-filter:blur(4px);
-  }
-  .control.recording{background:linear-gradient(90deg,#ff4d4d,#ff9a9a);color:#050005}
-  .control:active{transform:scale(.98)}
-  .recording-dot{width:10px;height:10px;border-radius:50%;background:#ff2b2b;margin-right:8px;box-shadow:0 0 6px #ff7b7b}
-
-  /* small helpers */
-  .muted-tag{font-size:12px;color:#9cc;opacity:.9;margin-top:6px}
-  .small{font-size:13px;color:#9ff0ec}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashteam - Ben 10 Revival Fund</title>
+    <!-- Load Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Tone.js for ambient background music -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <!-- Configure Tailwind with a futuristic color palette -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // Futuristic/ITC Colors
+                        'primary': '#4c42ff', // Vibrant Blue/Purple for main elements
+                        'secondary': '#00ffc8', // Neon Cyan/Teal for accents (the "flash")
+                        'background': '#0f172a', // Darker Slate/Space background (navy)
+                        'card': '#1e293b', // Slightly lighter dark gray for card background
+                        'text-light': '#f1f5f9', // Near-white text
+                        'text-muted': '#94a3b8', // Muted text for descriptions
+                        'border': '#334155', // Subtle border color
+                    },
+                    boxShadow: {
+                        // Custom shadow for a sharper futuristic glow effect
+                        'neon': '0 0 18px rgba(0, 255, 200, 0.7)',
+                        'glow': '0 0 15px rgba(76, 66, 255, 0.8), 0 0 5px rgba(76, 66, 255, 0.4) inset',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Custom styling for the page -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 70%);
+        }
+        /* Ensure the textarea background matches the main card for seamless look */
+        .fund-textarea {
+            background-color: theme('colors.card');
+        }
+        /* Enhance the hover effect for the main card */
+        .donation-card:hover {
+            box-shadow: 0 0 25px rgba(76, 66, 255, 1);
+            border-color: theme('colors.secondary');
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-4">
 
-<!-- Upload / options overlay -->
-<div class="overlay" id="overlay">
-  <div class="panel" id="panel">
-    <h1>AI Clipper — Smart Highlights</h1>
-    <p>Upload a video and the AI will extract the most engaging moments (audio-driven).</p>
+    <!-- Main Donation Card Container -->
+    <div class="donation-card w-full max-w-md bg-card p-6 sm:p-8 rounded-xl shadow-glow border-2 border-primary/50 transition duration-500 ease-in-out">
 
-    <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <label class="small">Clips</label>
-        <input id="clipCount" type="number" min="1" max="12" value="5" />
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <label class="small">Clip length (s)</label>
-        <input id="clipLength" type="number" min="3" max="30" value="7" />
-      </div>
+        <header class="text-center mb-6 relative">
+            <!-- Music Toggle Button -->
+            <button id="music-toggle" onclick="toggleMusic()" class="absolute top-0 right-0 p-2 rounded-full bg-border text-secondary hover:bg-primary/50 transition duration-300 active:scale-90" aria-label="Toggle Background Music">
+                <!-- Icon is set by JavaScript for ON/OFF state -->
+                <svg id="music-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <!-- Speaker Off Icon (Default State) -->
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9v.625c0 .553.447 1 1 1h.375a1 1 0 0 0 1-1V9M9 12h.008V12.008H9V12Zm2.5-1.5V12h3V10.5M4.5 9.75v4.5M10.5 8.25V6a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25v12a2.25 2.25 0 0 0 2.25 2.25h2.25a2.25 2.25 0 0 0 2.25-2.25v-2.25M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />
+                </svg>
+            </button>
+            
+            <div class="text-3xl font-extrabold text-primary mb-2 flex items-center justify-center">
+                <!-- Icon: Omnitrix-like shape -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-9 h-9 mr-2 text-secondary animate-pulse drop-shadow-neon">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0 8.25-4.5M12 21l-8.25-4.5M12 21V3m0 0 8.25 4.5M12 3l-8.25 4.5M15 9.75l-6 3.488M12 16.5l-3 1.732M15 16.5l3 1.732" />
+                </svg>
+                <span class="text-text-light">Flashteam</span> <span class="text-secondary ml-1">Revival</span>
+            </div>
+            <p class="text-text-muted text-sm">Activating the Omnitrix: Collective power to bring back Ben 10!</p>
+        </header>
+
+        <section class="mb-6">
+            <h2 class="text-xl font-semibold text-text-light mb-3 border-b border-border pb-2">Support the Current Campaign: Ben 10</h2>
+            <p class="text-text-muted text-sm">We are the Flashteam! Your contribution today directly funds the mission to revive and bring back **Ben 10** for a new generation. Every unit helps power up the Omnitrix!</p>
+        </section>
+        
+        <!-- Campaign Progress Tracker -->
+        <section class="mt-8 mb-6 p-4 bg-primary/20 rounded-lg shadow-lg border border-primary/50">
+            <h3 class="text-lg font-semibold text-text-light mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 mr-2 text-secondary">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                </svg>
+                Target Acquisition Status
+            </h3>
+            <div class="flex justify-between text-sm text-text-light mb-1">
+                <span id="units-gathered">Units Gathered: 45,100</span>
+                <span>Goal: 100,000 Units</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-border rounded-full h-3">
+                <div id="progress-bar" class="h-3 rounded-full bg-secondary shadow-neon transition-all duration-1000" style="width: 45.1%"></div>
+            </div>
+            <p class="text-text-muted text-xs mt-2" id="progress-message">We are 45.1% of the way to acquiring the full budget needed for the Ben 10 pitch!</p>
+        </section>
+
+        <!-- Error Message Box -->
+        <div id="error-message" class="hidden mb-4 bg-red-900/40 border border-red-700 text-red-400 p-3 rounded-lg shadow-lg" role="alert">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 flex-shrink-0 text-red-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.021 3.373 1.776 3.373h13.714c1.755 0 2.641-1.873 1.776-3.373L13.92 6.812a1.98 1.98 0 0 0-3.84 0L2.697 16.126ZM12 15.75h.007" />
+                </svg>
+                <div class="font-medium text-sm" id="error-text"></div>
+            </div>
+        </div>
+
+        <!-- External Fund IDs Block -->
+        <section id="external-funds" class="space-y-4 mb-6">
+            <h3 class="text-lg font-semibold text-text-light border-b border-border pb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-primary">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.063 60.063 0 0 1 1.777-3.702c.983-.996 2.052-1.854 3.167-2.524M11.25 4.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5ZM4.5 18.75h14.25c1.077 0 2.042-.51 2.658-1.31a.987.987 0 0 0 0-1.38c-.616-.8-1.581-1.31-2.658-1.31H4.5a2.25 2.25 0 0 1-2.25-2.25v-.375c0-1.036.84-1.875 1.875-1.875h16.5c1.035 0 1.875.84 1.875 1.875v.375c0 1.254-.74 2.378-1.875 2.75M12 9a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z" />
+                </svg>
+                Secure Fund Deposit Points
+            </h3>
+
+            <!-- 1. Campaign Fund ID (Conceptual/Standard) -->
+            <div>
+                <label class="block text-sm font-medium text-text-muted mb-1">Campaign Fund ID (Standard)</label>
+                <div class="bg-border p-3 rounded-lg shadow-inner flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 border-2 border-primary/50">
+                    <textarea id="omnitrix-id" readonly 
+                              class="fund-textarea flex-grow w-full bg-transparent border-none text-secondary font-mono text-sm resize-none overflow-hidden h-6 leading-6 focus:ring-0" 
+                              rows="1">FTEAM_BEN10_REVIVAL_OMNITRIX_001</textarea>
+                    
+                    <button onclick="copyAddress('omnitrix-id', 'Campaign Fund ID')"
+                            class="copy-btn w-full sm:w-auto py-2 px-4 rounded-lg text-xs font-semibold text-background bg-secondary hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition duration-150 active:scale-95 shadow-neon">
+                        Copy
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Bitcoin Address -->
+            <div>
+                <label class="block text-sm font-medium text-text-muted mb-1">Bitcoin (BTC) Address</label>
+                <div class="bg-border p-3 rounded-lg shadow-inner flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 border-2 border-primary/50">
+                    <textarea id="bitcoin-id" readonly 
+                              class="fund-textarea flex-grow w-full bg-transparent border-none text-secondary font-mono text-sm resize-none overflow-hidden h-6 leading-6 focus:ring-0" 
+                              rows="1">bc1qqqnf9qteyh7en9z9g4yl9e8l2mhxzfkd4vuegy</textarea>
+                    
+                    <button onclick="copyAddress('bitcoin-id', 'Bitcoin Address')"
+                            class="copy-btn w-full sm:w-auto py-2 px-4 rounded-lg text-xs font-semibold text-background bg-secondary hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition duration-150 active:scale-95 shadow-neon">
+                        Copy
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. UPI ID -->
+            <div>
+                <label class="block text-sm font-medium text-text-muted mb-1">UPI ID (India)</label>
+                <div class="bg-border p-3 rounded-lg shadow-inner flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 border-2 border-primary/50">
+                    <textarea id="upi-id" readonly 
+                              class="fund-textarea flex-grow w-full bg-transparent border-none text-secondary font-mono text-sm resize-none overflow-hidden h-6 leading-6 focus:ring-0" 
+                              rows="1">skmohsinpasha@fam</textarea>
+                    
+                    <button onclick="copyAddress('upi-id', 'UPI ID')"
+                            class="copy-btn w-full sm:w-auto py-2 px-4 rounded-lg text-xs font-semibold text-background bg-secondary hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition duration-150 active:scale-95 shadow-neon">
+                        Copy
+                    </button>
+                </div>
+            </div>
+
+        </section>
+        
+        <!-- NEW: Contribution Instruction Block -->
+        <div class="p-4 mb-4 bg-primary/30 rounded-lg border border-primary animate-pulse">
+            <p class="font-bold text-text-light flex items-center text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-2 text-secondary flex-shrink-0">
+                  <path fill-rule="evenodd" d="M2.515 10.674c1.04-1.092 3.166-2.087 5.518-2.585a13.433 13.433 0 0 1 1.897.148c1.373.181 2.766.402 4.092.748L17.2 9.57c1.353.336 2.51.789 3.19.063-.099-.958-.33-1.897-.67-2.775a24.114 24.114 0 0 0-3.525-5.918 1.492 1.492 0 0 0-.592-.519c-.381-.229-.938-.17-1.196.115L11.056 4.3c-.63.64-1.298 1.157-2.022 1.547a2.641 2.641 0 0 1-1.32.228 3.513 3.513 0 0 1-1.401-.585 1.488 1.488 0 0 0-.918-.282 1.503 1.503 0 0 0-.671.189c-.611.354-1.076.994-1.123 1.76l-.004.148.008.016 1.05.762Zm2.52 6.848c.84-.73 2.19-.948 3.57-1.046 1.437-.1 2.9-.06 4.316.096l4.234.454c1.382.148 2.74.025 3.376-.432-.23.475-.544.92-.931 1.302a24.11 24.11 0 0 1-3.525 5.918 1.493 1.493 0 0 1-.592.519c-.381.229-.938.17-1.196-.115L11.056 19.7c-.63-.64-1.298-1.157-2.022-1.547a2.641 2.641 0 0 1-1.32-.228 3.514 3.514 0 0 1-1.401.585 1.495 1.495 0 0 0-.671.189c-.611.354-1.076.994-1.123 1.76l-.004.148.008.016 1.05.762Z" clip-rule="evenodd" />
+                </svg>
+
+                ACTION REQUIRED!
+            </p>
+            <p class="text-sm text-text-light mt-1">
+                **Only click the button below AFTER you have completed your external donation** using one of the IDs above. This finalizes your data acquisition and grants you a unique Omnitrix ID.
+            </p>
+        </div>
+
+
+        <!-- Confirmation Button -->
+        <button onclick="confirmContribution()"
+                class="w-full py-3 px-4 rounded-lg text-lg font-bold text-background bg-primary hover:bg-primary/80 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary transition duration-300 active:scale-[0.98] shadow-glow uppercase tracking-wider mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 inline-block mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Confirm External Donation & Get Omnitrix ID
+        </button>
+
+
+        <!-- Success Message Box -->
+        <div id="success-message" class="hidden mt-6 bg-green-900/40 border border-secondary text-secondary p-4 rounded-lg shadow-lg" role="alert">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3 flex-shrink-0">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <div class="font-medium">
+                    DNA Acquired!
+                </div>
+            </div>
+            <p class="text-sm mt-2 text-text-light" id="donation-confirmation-text">The campaign fund ID has been copied. Thank you for joining the Flashteam and helping unlock the revival!</p>
+        </div>
+
+        <!-- Contact Information Section -->
+        <section class="mt-6 pt-4 border-t border-border">
+            <h3 class="text-sm font-semibold text-text-light mb-2">Connect with Flashteam</h3>
+            <div class="space-y-1">
+                <!-- Email Link -->
+                <a href="mailto:darkplayzmc2@gmail.com" class="flex items-center text-sm text-primary hover:text-secondary transition duration-150">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-secondary">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                    darkplayzmc2@gmail.com
+                </a>
+                <!-- YouTube Link -->
+                <a href="https://www.youtube.com/@PrimeBenTennyson" target="_blank" class="flex items-center text-sm text-primary hover:text-secondary transition duration-150">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-secondary">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l-4.72 4.72a.75.75 0 0 1-1.06 0L7.5 12m4.5-8.662c0-.515-.494-.954-1.06-.954H9.75M18 10.5V9.75c0-.414-.336-.75-.75-.75h-3.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75H18m0-7.5v7.5m0-7.5l-7.5 7.5M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0Z" />
+                    </svg>
+                    @PrimeBenTennyson
+                </a>
+            </div>
+        </section>
+
+        <footer class="mt-8 pt-4 border-t border-border text-center">
+            <p class="text-xs text-text-muted">Flashteam is a community-driven initiative. All donations are external and secure.</p>
+        </footer>
     </div>
 
-    <label class="btn" id="uploadLabel">Choose video
-      <input id="fileInput" type="file" accept="video/*" style="display:none" />
-    </label>
+    <script>
+        // --- Global Variables & Constants ---
+        const GOAL_UNITS = 100000;
+        let unitsGathered = 45100; // Initial simulated value
 
-    <div style="margin-top:12px">
-      <button class="btn" id="analyzeBtn" style="display:none">Analyze & Generate</button>
-    </div>
+        // DOM Elements for Progress
+        const unitsGatheredEl = document.getElementById('units-gathered');
+        const progressBarEl = document.getElementById('progress-bar');
+        const progressMessageEl = document.getElementById('progress-message');
 
-    <div class="status" id="status">Ready</div>
-    <div style="margin-top:10px;font-size:12px;color:#88e6e0">Note: downloads saved as webm (browser-encoded)</div>
-  </div>
-</div>
+        // DOM Elements for Messages
+        const successBox = document.getElementById('success-message');
+        const errorBox = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        const confirmationText = document.getElementById('donation-confirmation-text');
 
-<!-- Vertical feed -->
-<div id="feed" class="feed" style="display:none"></div>
+        // --- Progress Logic ---
 
-<script>
-/*
-  AI Clipper — engagement detection by audio-energy peaks
-  - Decode audio from file (AudioContext.decodeAudioData)
-  - Compute short-time energy over windows (windowSec = 0.25)
-  - Find top peaks with non-maximum suppression (minDistance)
-  - For each selected peak create clip centered at peak (length chosen)
-  - Render vertical feed; each clip uses <video src="blob#t=..."> for preview
-  - Download records the played segment via captureStream + MediaRecorder and saves webm
-*/
+        function updateProgressDisplay() {
+            const percentage = (unitsGathered / GOAL_UNITS) * 100;
+            const percentageClamped = Math.min(percentage, 100).toFixed(1); // Clamp at 100%
 
-const fileInput = document.getElementById('fileInput');
-const uploadLabel = document.getElementById('uploadLabel');
-const analyzeBtn = document.getElementById('analyzeBtn');
-const statusEl = document.getElementById('status');
-const feed = document.getElementById('feed');
-const overlay = document.getElementById('overlay');
-
-let uploadedFile = null;
-let audioBufferGlobal = null;
-let objectUrl = null;
-
-// user controls
-const clipCountEl = document.getElementById('clipCount');
-const clipLengthEl = document.getElementById('clipLength');
-
-fileInput.addEventListener('change', (e) => {
-  const f = e.target.files[0];
-  if(!f) return;
-  uploadedFile = f;
-  statusEl.textContent = `Selected: ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`;
-  analyzeBtn.style.display = 'inline-block';
-});
-
-// analysis button
-analyzeBtn.addEventListener('click', async () => {
-  if (!uploadedFile) return alert('Please choose a video file first.');
-  analyzeBtn.disabled = true;
-  statusEl.textContent = 'Loading file and extracting audio…';
-  try {
-    // load file as ArrayBuffer
-    const arrayBuffer = await uploadedFile.arrayBuffer();
-
-    // decode audio (use OfflineAudioContext for larger files)
-    const audioCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 1, 44100);
-    const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
-    audioBufferGlobal = decoded;
-    statusEl.textContent = 'Analyzing audio for high-energy segments…';
-    await new Promise(r => setTimeout(r, 200)); // small pause
-
-    // compute energy curve
-    const clipLength = Math.max(3, parseFloat(clipLengthEl.value) || 7);
-    const clipCount = Math.max(1, Math.min(12, parseInt(clipCountEl.value) || 5));
-    const peaks = findEngagingPeaks(decoded, clipCount, clipLength);
-    statusEl.textContent = `Detected ${peaks.length} highlight(s). Generating clips…`;
-
-    // create object URL for previewing video
-    if (objectUrl) URL.revokeObjectURL(objectUrl);
-    objectUrl = URL.createObjectURL(uploadedFile);
-
-    // create feed clips
-    await generateClipsFromPeaks(objectUrl, peaks, clipLength);
-
-    // hide overlay
-    overlay.style.display = 'none';
-    feed.style.display = 'block';
-    statusEl.textContent = 'Done — scroll to view highlights';
-  } catch (err) {
-    console.error(err);
-    alert('Error analyzing file: ' + err.message);
-    statusEl.textContent = 'Error';
-  } finally {
-    analyzeBtn.disabled = false;
-  }
-});
-
-/* ---------- Audio analysis ---------- */
-function findEngagingPeaks(audioBuffer, desiredCount, clipLength) {
-  // Compute mono signal
-  const channel = audioBuffer.numberOfChannels > 0 ? audioBuffer.getChannelData(0) : audioBuffer.getChannelData(0);
-  const sr = audioBuffer.sampleRate;
-
-  // Energy window in seconds
-  const windowSec = 0.25; // short window to detect transient energy
-  const hopSec = 0.12;
-  const winSize = Math.floor(windowSec * sr);
-  const hopSize = Math.floor(hopSec * sr);
-  const energies = [];
-  const times = [];
-
-  for (let pos = 0; pos + winSize < channel.length; pos += hopSize) {
-    let sum = 0;
-    for (let i = pos; i < pos + winSize; i++) {
-      const s = channel[i];
-      sum += s * s;
-    }
-    const rms = Math.sqrt(sum / winSize);
-    energies.push(rms);
-    times.push(pos / sr);
-  }
-
-  // find peaks: score = energy * local-contrast
-  const scores = energies.map((e, i) => {
-    // local average around +/- 4 hops
-    const r = 4;
-    let sum = 0, cnt = 0;
-    for (let k = Math.max(0, i - r); k <= Math.min(energies.length - 1, i + r); k++) {
-      sum += energies[k]; cnt++;
-    }
-    const localAvg = sum / cnt;
-    return e - localAvg * 0.6; // favor energy above local average
-  });
-
-  // create array of {time,score} and sort by score
-  const arr = scores.map((s, i) => ({time: times[i], score: s})).filter(a => a.score > 0);
-
-  arr.sort((a,b) => b.score - a.score);
-
-  // select top peaks with min distance (non-maximum suppression)
-  const minDist = Math.max(1, Math.floor((clipLength * 0.6))); // seconds
-  const selected = [];
-  for (let candidate of arr) {
-    if (selected.length >= desiredCount) break;
-    // ensure candidate is not too close to existing chosen ones
-    let ok = true;
-    for (let s of selected) {
-      if (Math.abs(s.time - candidate.time) < minDist) { ok = false; break; }
-    }
-    if (ok) selected.push(candidate);
-  }
-
-  // if not enough peaks, fallback to evenly spaced times
-  if (selected.length < desiredCount) {
-    const totalSec = audioBuffer.duration;
-    selected.length = 0;
-    for (let i=0;i<desiredCount;i++){
-      const t = Math.min(totalSec - 0.5, (i + 0.5) * totalSec / desiredCount);
-      selected.push({time: t, score: 0});
-    }
-  }
-
-  // sort by time ascending
-  selected.sort((a,b)=>a.time-b.time);
-
-  // convert to clip start times (center clip on peak)
-  const clipStarts = selected.map(s => {
-    let start = s.time - clipLength/2;
-    if (start < 0) start = 0;
-    // ensure not beyond file
-    if (start + clipLength > audioBuffer.duration) start = Math.max(0, audioBuffer.duration - clipLength);
-    return {start: start, score: s.score};
-  });
-
-  return clipStarts;
-}
-
-/* ---------- Generate feed + clips ---------- */
-async function generateClipsFromPeaks(objectUrl, peaks, clipLength) {
-  feed.innerHTML = '';
-
-  for (let i = 0; i < peaks.length; i++) {
-    const {start} = peaks[i];
-    const end = start + clipLength;
-    const clipEl = document.createElement('div');
-    clipEl.className = 'clip';
-
-    // video element (for preview). Use #t= to hint browser start point
-    // Note: some browsers ignore end in fragment; preview will loop whole viewport but we'll use events to clamp
-    const video = document.createElement('video');
-    video.src = `${objectUrl}#t=${start},${end}`;
-    video.setAttribute('playsinline','');
-    video.setAttribute('webkit-playsinline','');
-    video.setAttribute('preload','metadata');
-    video.controls = false;
-    video.loop = true;
-    video.muted = true; // start muted
-    video.style.maxWidth = '100%';
-    clipEl.appendChild(video);
-
-    // floating controls
-    const controls = document.createElement('div');
-    controls.className = 'controls';
-
-    const playBtn = document.createElement('div');
-    playBtn.className = 'control';
-    playBtn.textContent = 'Play';
-    playBtn.onclick = () => togglePlayFor(playBtn);
-
-    const muteBtn = document.createElement('div');
-    muteBtn.className = 'control';
-    muteBtn.textContent = 'Unmute';
-    muteBtn.onclick = () => toggleMuteFor(muteBtn);
-
-    const downloadBtn = document.createElement('div');
-    downloadBtn.className = 'control';
-    downloadBtn.textContent = 'Download';
-    downloadBtn.onclick = async () => {
-      // visual feedback
-      downloadBtn.classList.add('recording');
-      const dot = document.createElement('span');
-      dot.className = 'recording-dot';
-      downloadBtn.prepend(dot);
-      downloadBtn.textContent = 'Recording';
-      try {
-        await recordSegmentAndDownload(objectUrl, start, end, `AIClip_${i+1}.webm`);
-      } catch (err) {
-        console.error(err);
-        alert('Recording failed: ' + err.message);
-      } finally {
-        // restore
-        downloadBtn.classList.remove('recording');
-        if (dot && dot.parentNode) dot.parentNode.removeChild(dot);
-        downloadBtn.textContent = 'Download';
-      }
-    };
-
-    controls.appendChild(playBtn);
-    controls.appendChild(muteBtn);
-    controls.appendChild(downloadBtn);
-
-    clipEl.appendChild(controls);
-
-    // small muted hint
-    const mutedTag = document.createElement('div');
-    mutedTag.className = 'muted-tag';
-    mutedTag.textContent = 'Muted by default — tap Unmute to activate audio';
-    mutedTag.style.position='absolute';
-    mutedTag.style.left='18px';
-    mutedTag.style.bottom='26px';
-    mutedTag.style.color='#9ff0ec';
-    clipEl.appendChild(mutedTag);
-
-    feed.appendChild(clipEl);
-
-    // hook element reference for control functions
-    // attach dataset
-    playBtn._video = video;
-    muteBtn._video = video;
-
-    // ensure video won't autoplay sound; preview starts paused — but auto-play first clip
-    video.addEventListener('loadedmetadata', () => {
-      // clamp duration if fragment ignored: try to control playback range
-      video._clipStart = start;
-      video._clipEnd = Math.min(end, video.duration || end);
-    });
-
-    // periodically ensure loop within desired window (in case fragment ignored)
-    video.addEventListener('timeupdate', () => {
-      if (typeof video._clipEnd === 'number' && video.currentTime > video._clipEnd - 0.05) {
-        // loop back
-        try { video.currentTime = Math.max(video._clipStart, 0); } catch(e){}
-      }
-    });
-
-    // click toggles play/pause
-    video.addEventListener('click', () => {
-      if (video.paused) { video.play(); playBtn.textContent='Pause'; } else { video.pause(); playBtn.textContent='Play'; }
-    });
-  }
-
-  // autoplay the first clip muted (user gesture from clicking Analyze counts)
-  const firstVideo = feed.querySelector('video');
-  if (firstVideo) {
-    try { await firstVideo.play(); const pb = feed.querySelector('.control'); if(pb) pb.textContent='Pause'; } catch(e) {}
-  }
-
-  // auto-pause logic on scroll: play clip in viewport
-  feed.addEventListener('scroll', () => {
-    const vh = window.innerHeight;
-    const videos = feed.querySelectorAll('video');
-    videos.forEach(v => {
-      const rect = v.getBoundingClientRect();
-      if (rect.top >= 0 && rect.bottom <= vh) {
-        if (v.paused) { v.play(); const btn = v.parentNode.querySelector('.control'); if(btn) btn.textContent='Pause'; }
-      } else {
-        if (!v.paused) { v.pause(); const btn = v.parentNode.querySelector('.control'); if(btn) btn.textContent='Play'; }
-      }
-    });
-  });
-}
-
-/* ---------- UI helpers ---------- */
-function togglePlayFor(btn) {
-  const v = btn._video;
-  if (!v) return;
-  if (v.paused) {
-    v.play(); btn.textContent = 'Pause';
-  } else {
-    v.pause(); btn.textContent = 'Play';
-  }
-}
-function toggleMuteFor(btn) {
-  const v = btn._video;
-  if (!v) return;
-  v.muted = !v.muted;
-  btn.textContent = v.muted ? 'Unmute' : 'Mute';
-}
-
-/* ---------- Recording (captureStream + MediaRecorder) ---------- */
-async function recordSegmentAndDownload(srcUrl, startSec, endSec, filename) {
-  // Create an offscreen video element to play the exact segment
-  return new Promise(async (resolve, reject) => {
-    const v = document.createElement('video');
-    v.src = `${srcUrl}#t=${startSec},${endSec}`; // hint
-    v.muted = false;
-    v.playsInline = true;
-    v.crossOrigin = 'anonymous';
-
-    let stream;
-    let recorder;
-    let chunks = [];
-
-    v.addEventListener('loadedmetadata', async () => {
-      // Some browsers ignore #t end; we'll control playback manually
-      const clipStart = startSec;
-      const clipEnd = Math.min(endSec, v.duration || endSec);
-
-      // seek to start
-      try {
-        v.currentTime = clipStart;
-      } catch(e){
-        // ignore
-      }
-
-      // wait for seeked
-      v.addEventListener('seeked', async function onseek(){
-        v.removeEventListener('seeked', onseek);
-        // capture stream (audio+video) from video element
-        try {
-          stream = v.captureStream();
-        } catch (err) {
-          reject(new Error('captureStream not supported in this browser.'));
-          return;
+            unitsGatheredEl.textContent = `Units Gathered: ${unitsGathered.toLocaleString()}`;
+            progressBarEl.style.width = `${percentageClamped}%`;
+            
+            if (percentage >= 100) {
+                progressMessageEl.textContent = "TARGET ACQUIRED! The Omnitrix is fully charged for the Ben 10 pitch!";
+                progressBarEl.classList.add('bg-primary');
+                progressBarEl.classList.remove('bg-secondary');
+            } else {
+                progressMessageEl.textContent = `We are ${percentageClamped}% of the way to acquiring the full budget needed for the Ben 10 pitch!`;
+                progressBarEl.classList.add('bg-secondary');
+                progressBarEl.classList.remove('bg-primary');
+            }
+        }
+        
+        function hideMessages() {
+            successBox.classList.add('hidden');
+            errorBox.classList.add('hidden');
         }
 
-        // start recording
-        try {
-          recorder = new MediaRecorder(stream, {mimeType: 'video/webm; codecs=vp8,opus'});
-        } catch (err) {
-          reject(new Error('MediaRecorder not available or codec unsupported: ' + err.message));
-          return;
+        // --- Donation Simulation Logic ---
+
+        function confirmContribution() {
+            hideMessages();
+            
+            // 1. Generate unique Omnitrix Revival ID
+            const revivalId = 'OMNITRIX_RVL_' + crypto.randomUUID().substring(0, 8).toUpperCase();
+
+            // 2. Display success message with the unique ID
+            confirmationText.innerHTML = `**Transmission Complete!** Your unique Omnitrix Revival ID is: <span class="text-primary font-mono font-bold">${revivalId}</span>. Thank you for powering the revival!`;
+            successBox.classList.remove('hidden');
+
+            // 3. Reset progress for the next cycle (simulating a full unit "spend" for the pitch)
+            // We set it to a small value to show the campaign restarting.
+            unitsGathered = 100; 
+
+            // 4. Update the display
+            updateProgressDisplay();
+
+            // Hide message after a timeout
+            setTimeout(() => {
+                successBox.classList.add('hidden');
+            }, 8000);
         }
 
-        recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
-        recorder.onstop = async () => {
-          const blob = new Blob(chunks, {type:'video/webm'});
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(()=>URL.revokeObjectURL(url), 2000);
-          resolve(blob);
+        // --- Utility Functions ---
+
+        function setErrorMessage(message) {
+            errorText.textContent = message;
+            errorBox.classList.remove('hidden');
+        }
+
+
+        function copyAddress(id, label) {
+            hideMessages(); // Clear any previous messages
+            const addressToCopy = document.getElementById(id);
+            // The button is the element sibling next to the textarea's parent div
+            const copyButton = addressToCopy.parentElement.querySelector('button'); 
+
+            try {
+                // Select the text in the textarea
+                addressToCopy.select();
+                addressToCopy.setSelectionRange(0, 99999); // For mobile devices
+
+                // Copy the selected text to the clipboard
+                document.execCommand('copy');
+                
+                // Show success message with specific text
+                confirmationText.innerHTML = `The **${label}** has been copied successfully. Please use this address for your external transaction.`;
+                successBox.classList.remove('hidden');
+                
+                // Temporarily change button text for feedback
+                const originalText = 'Copy';
+                copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 inline-block mr-1">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg> Acquired!`;
+                
+                setTimeout(() => {
+                    copyButton.innerHTML = originalText;
+                    successBox.classList.add('hidden'); // Hide success message after a few seconds
+                }, 3000);
+
+            } catch (err) {
+                console.error('Could not copy text: ', err);
+                setErrorMessage(`Failed to copy the ${label} address automatically. Please select and copy it manually.`);
+            }
+        }
+
+
+        // --- Tone.js Music Logic ---
+        let isMusicPlaying = false;
+        let ambientSynth;
+        let ambientLoop;
+        const musicIcon = document.getElementById('music-icon');
+        
+        function setMusicIcon(isPlaying) {
+            // Speaker Wave Icon (ON state)
+            const onIcon = `<path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636 17.59 7.16c.11.12.213.247.311.378 1.488 1.488 1.488 3.655 0 5.143l-1.524 1.524a7.5 7.5 0 0 0 0-10.286ZM14.162 7.828l-1.524 1.524c.074.075.145.153.213.235 1.052 1.052 1.052 2.647 0 3.7l-1.524 1.524M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM10.5 8.25V6a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25v12a2.25 2.25 0 0 0 2.25 2.25h2.25a2.25 2.25 0 0 0 2.25-2.25v-2.25" />`;
+            // Speaker Off Icon (OFF state)
+            const offIcon = `<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9v.625c0 .553.447 1 1 1h.375a1 1 0 0 0 1-1V9M9 12h.008V12.008H9V12Zm2.5-1.5V12h3V10.5M4.5 9.75v4.5M10.5 8.25V6a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25v12a2.25 2.25 0 0 0 2.25 2.25h2.25a2.25 2.25 0 0 0 2.25-2.25v-2.25M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />`;
+            
+            musicIcon.innerHTML = isPlaying ? onIcon : offIcon;
+        }
+
+        async function toggleMusic() {
+            // 1. Must start Tone.Context on user gesture for audio to work
+            if (Tone.context.state !== 'running') {
+                await Tone.start();
+            }
+
+            if (isMusicPlaying) {
+                Tone.Transport.stop();
+                isMusicPlaying = false;
+                setMusicIcon(false);
+            } else {
+                Tone.Transport.start();
+                isMusicPlaying = true;
+                setMusicIcon(true);
+            }
+        }
+
+        // Initialize Tone.js components and UI on load
+        window.onload = function() {
+            // Setup a simple synth for ambient sci-fi sound (adjusting volume low)
+            ambientSynth = new Tone.Synth({
+                volume: -15, // Keep it in the background
+                oscillator: { type: "sine" },
+                envelope: {
+                    attack: 4,
+                    decay: 1,
+                    sustain: 0.5,
+                    release: 8
+                }
+            }).toDestination();
+            
+            // Set up a chord progression loop (C Minor 7th arpeggio, ambient)
+            ambientLoop = new Tone.Loop(time => {
+                ambientSynth.triggerAttackRelease("C3", "4n", time);
+                ambientSynth.triggerAttackRelease("Eb3", "4n", time + 0.5);
+                ambientSynth.triggerAttackRelease("G3", "4n", time + 1);
+                ambientSynth.triggerAttackRelease("Bb3", "4n", time + 1.5);
+            }, "2n").start(0);
+
+            // Initially set the icon to 'off' and update progress display with initial units
+            setMusicIcon(false);
+            updateProgressDisplay();
         };
 
-        // play video (may require user gesture - upload/Analyze counts)
-        try {
-          await v.play();
-        } catch(err){
-          // autoplay with sound may be blocked — play muted to start then unmute?
-          v.muted = true;
-          try { await v.play(); } catch(e){}
-        }
-
-        recorder.start(100); // collect every 100ms
-
-        // stop recording after duration
-        const duration = Math.max(0.1, clipEnd - clipStart);
-        setTimeout(async () => {
-          try {
-            recorder.stop();
-          } catch(e){}
-          try { v.pause(); } catch(e){}
-          resolve();
-        }, Math.ceil(duration * 1000 + 200)); // slight buffer
-      });
-    });
-
-    // error handlers
-    v.onerror = (ev) => reject(new Error('Failed to load video for recording.'));
-    // append offscreen to DOM to ensure captureStream works in some browsers
-    v.style.position='fixed'; v.style.left='-20000px'; v.style.top='-20000px';
-    document.body.appendChild(v);
-    // cleanup after finish: remove element after some time
-    setTimeout(()=>{ try{ if (v.parentNode) v.parentNode.removeChild(v);}catch(e){} }, 6000);
-  });
-}
-
-</script>
+    </script>
 </body>
 </html>
