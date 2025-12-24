@@ -3,172 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sk Mohsin Pasha | Developer & Designer</title>
+    <title>Sk Mohsin Pasha | System Dossier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #7289da; /* Discord Blue */
-            --dark: #23272a;
-            --light: #ffffff;
-            --gray: #f4f4f4;
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff00ea;
+            --dark-space: #05060a;
+            --panel-bg: rgba(15, 20, 30, 0.9);
+            --border-glow: rgba(0, 242, 255, 0.2);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            color: #333;
-            background-color: var(--light);
-            line-height: 1.6;
-            scroll-behavior: smooth;
+            background-color: var(--dark-space);
+            color: #c0c0c0;
+            font-family: 'Rajdhani', sans-serif;
+            background-image: linear-gradient(to right, rgba(0,242,255,0.02) 1px, transparent 1px), 
+                              linear-gradient(to bottom, rgba(0,242,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
 
-        /* Navigation */
+        /* Top HUD */
         nav {
-            background: var(--dark);
-            padding: 1rem;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
+            display: flex; justify-content: space-between; padding: 20px 50px;
+            background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--neon-cyan);
+            position: sticky; top: 0; z-index: 100;
         }
+        .logo { font-family: 'Orbitron'; color: var(--neon-cyan); letter-spacing: 2px; }
 
-        nav ul {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            margin: 0;
-        }
+        /* Hero */
+        .hero { height: 50vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .glitch { font-family: 'Orbitron'; font-size: 4rem; color: white; text-shadow: 2px 2px var(--neon-pink); }
 
-        nav ul li { margin: 0 20px; }
+        section { padding: 60px 12%; }
+        h2 { font-family: 'Orbitron'; color: var(--neon-cyan); margin-bottom: 30px; border-left: 5px solid var(--neon-pink); padding-left: 15px; }
 
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        nav ul li a:hover { color: var(--primary); }
-
-        /* Hero Section */
-        header {
-            height: 80vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1587620962725-abab7fe55159?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .hero-title { font-size: 3.5rem; margin-bottom: 10px; }
-        .hero-sub { font-size: 1.5rem; color: var(--primary); font-weight: bold; }
-
-        /* Sections */
-        section { padding: 80px 20px; max-width: 1100px; margin: auto; }
-        h2 { font-size: 2.5rem; text-align: center; margin-bottom: 40px; color: var(--dark); }
-
-        /* Cards Grid */
-        .grid {
+        /* Bio Section Styling */
+        .bio-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .card {
-            background: var(--gray);
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            transition: 0.3s;
-            border-bottom: 4px solid var(--primary);
-        }
-
-        .card:hover { transform: translateY(-10px); background: #eef1ff; }
-
-        /* Discord Button */
-        .btn {
-            background: var(--primary);
-            color: white;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 20px;
-        }
-
-        .btn:hover { background: #5b6eae; }
-
-        footer {
-            background: var(--dark);
-            color: white;
-            text-align: center;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: var(--panel-bg);
             padding: 40px;
+            border: 1px solid var(--border-glow);
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 95% 100%, 0 100%);
         }
+
+        .bio-text p { margin-bottom: 20px; font-size: 1.1rem; line-height: 1.8; color: #e0e0e0; }
+        .bio-stats { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 5px; }
+
+        .skill-bar { margin-bottom: 15px; }
+        .skill-name { display: flex; justify-content: space-between; margin-bottom: 5px; font-family: 'Orbitron'; font-size: 0.8rem; }
+        .bar-bg { background: #222; height: 8px; border-radius: 10px; overflow: hidden; }
+        .bar-fill { background: var(--neon-cyan); height: 100%; box-shadow: 0 0 10px var(--neon-cyan); }
+
+        /* Roles Grid */
+        .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .role-card {
+            background: rgba(255,255,255,0.03); padding: 25px; border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+        }
+        .role-card:hover { border-color: var(--neon-cyan); background: rgba(0, 242, 255, 0.05); }
+        .role-card h3 { font-family: 'Orbitron'; color: #fff; margin-bottom: 10px; }
+
+        .btn-discord {
+            display: inline-block; padding: 15px 35px; border: 1px solid var(--neon-pink);
+            color: var(--neon-pink); text-decoration: none; font-family: 'Orbitron';
+            transition: 0.4s; margin-top: 20px;
+        }
+        .btn-discord:hover { background: var(--neon-pink); color: white; box-shadow: 0 0 20px var(--neon-pink); }
+
+        @media (max-width: 768px) { .bio-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <nav>
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+        <div class="logo">M_PASHA_v5.0</div>
+        <div style="font-family: 'Orbitron'; font-size: 0.7rem; color: var(--neon-pink);">STATUS: ONLINE</div>
     </nav>
 
-    <header id="home">
-        <h1 class="hero-title">Sk Mohsin Pasha</h1>
-        <p class="hero-sub">Developer | Pro Editor | Image Designer</p>
-        <p>5+ Years of expertise in Minecraft Development & Software Solutions</p>
+    <header class="hero">
+        <h1 class="glitch">SK MOHSIN PASHA</h1>
+        <p style="letter-spacing: 5px; color: var(--neon-cyan);">DEVELOPER // DESIGNER // EDITOR</p>
     </header>
 
+    <section id="bio">
+        <h2>USER_BIOGRAPHY</h2>
+        <div class="bio-container">
+            <div class="bio-text">
+                <p>
+                    I am a dedicated Developer and Creative Artist with over **5 years of hands-on experience** in the digital realm. My journey began with a deep fascination for Minecraft server architecture, which quickly evolved into a passion for custom plugin coding and software development.
+                </p>
+                <p>
+                    Over the years, I have mastered the art of balancing technical backend logic with high-end visual aesthetics. Whether it's optimizing a network for hundreds of players or designing a professional brand identity, I focus on performance, precision, and futuristic design.
+                </p>
+            </div>
+            <div class="bio-stats">
+                <div class="skill-bar">
+                    <div class="skill-name"><span>MC SERVER DEV</span><span>95%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 95%;"></div></div>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-name"><span>PLUGIN CODING (JAVA)</span><span>88%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 88%;"></div></div>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-name"><span>PRO VIDEO EDITING</span><span>90%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 90%;"></div></div>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-name"><span>IMAGE DESIGN</span><span>85%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 85%;"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="experience">
-        <h2>My Experience</h2>
-        <div class="grid">
-            <div class="card">
-                <h3>MC Server Dev</h3>
-                <p>5+ years creating high-performance Minecraft servers, handling optimization, and network setup.</p>
+        <h2>CORE_MODULES</h2>
+        <div class="role-grid">
+            <div class="role-card">
+                <h3>System Dev</h3>
+                <p>Specializing in Java and Python to build scalable Minecraft plugins and lightweight desktop software. Expert in NMS and API hooks.</p>
             </div>
-            <div class="card">
-                <h3>Plugin Coding</h3>
-                <p>Custom plugin development to bring unique features and mechanics to your gaming community.</p>
+            <div class="role-card">
+                <h3>Visual Lead</h3>
+                <p>Professional video editing and graphic design. Creating high-impact visual content that captures attention and defines brands.</p>
             </div>
-            <div class="card">
-                <h3>Software Dev</h3>
-                <p>Building basic software tools and automation scripts to streamline digital workflows.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="services">
-        <h2>Creative Services</h2>
-        <div class="grid">
-            <div class="card">
-                <h3>Pro Video Editing</h3>
-                <p>High-quality video editing for social media, gaming highlights, or professional presentations.</p>
-            </div>
-            <div class="card">
-                <h3>Image Design</h3>
-                <p>Professional graphic design including logos, banners, and server assets.</p>
+            <div class="role-card">
+                <h3>Consultancy</h3>
+                <p>5+ years of experience helping server owners optimize their hardware and player experience for maximum retention.</p>
             </div>
         </div>
     </section>
 
-    <section id="contact" style="text-align: center; background: #f9f9f9;">
-        <h2>Let's Work Together</h2>
-        <p>Looking for a developer or a designer? Reach out to me on Discord!</p>
-        <p><strong>Username:</strong> raredude.exe</p>
-        <a href="https://discord.gg/5gkrfsyDbH" target="_blank" class="btn">Join My Discord Server</a>
+    <section id="contact" style="text-align: center;">
+        <h2>COMM_LINK</h2>
+        <p>Ready to start a project or need technical assistance?</p>
+        <p style="margin-top: 10px;">DISCORD ID: <span style="color: var(--neon-cyan);">raredude.exe</span></p>
+        <a href="https://discord.gg/5gkrfsyDbH" target="_blank" class="btn-discord">JOIN SERVER HUB</a>
     </section>
 
-    <footer>
-        <p>&copy; 2024 Sk Mohsin Pasha. Built with passion.</p>
+    <footer style="text-align: center; padding: 40px; font-size: 0.8rem; opacity: 0.4;">
+        &copy; 2024 SK MOHSIN PASHA | ALL SYSTEMS OPERATIONAL
     </footer>
 
 </body>
